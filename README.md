@@ -1,2 +1,2 @@
 # ThermoCodeLib
-Learn to use git hub for ORCAL projecs
+The library of EES, python,... code for thermodynamic
