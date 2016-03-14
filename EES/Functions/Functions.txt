@@ -172,8 +172,10 @@ $bookmark Shell-and-Tube: single phase shell side heat transfer (Kern method)
 Procedure heattransfer_shell_sp_kern(F$,T_in, T_out, P, m_dot,D,Pitch$,Pitch,OD,T_w,x_B,L,N_sp:h_shell,DELTAp)
 "! single phase heat transfer and pressure drop in shell side using Kern method"
  
-mu		= viscosity(F$,T=(T_in+T_out)/2,P=P)
-mu_w	= viscosity(F$,T=T_w,P=P)
+//mu	= viscosity(F$,T=(T_in+T_out)/2,P=P)
+mu		= propssi('V','P',P,'T',(T_in+T_out)/2,F$)
+//mu_w	= viscosity(F$,T=T_w,P=P)
+mu_w	= propssi('V','P',P,'T',T_w,F$)
 //k		= conductivity(F$,T = (T_in+T_out)/2,P=P)
 k		= propssi('L','P',P,'T',(T_in+T_out)/2,F$)
 cp		= propssi('C','T',(T_in+T_out)/2,'P',P,F$)
@@ -407,10 +409,31 @@ h_Imura		= 0.32*((rho_l^0.65*k_l^0.3*Cp_l^0.7*g#^0.2*q_flux^0.4)/(rho_v^0.25*h_l
 h_Cooper		= 55*MM^(-0.5)*q_flux^0.67*(p_r)^0.12*(-log10(p_r))^(-0.55) "Cooper correlation"
 h_Mostinski	= 0.106*(propssi('Pcrit','',0,'',0,F$)/1e5)^0.69*(1.8*p_r^0.17+4*p_r^1.2+10*p_r^10)*q_flux^0.7 "Mostinski correlation"
  
-If Corr$= 'Imura' Then h = h_Imura
-If Corr$='Cooper' Then h = h_Cooper
-If Corr$='Mostinski' Then h = h_Mostinski
+If Corr$	= 'Imura' Then h = h_Imura
+If Corr$	='Cooper' Then h = h_Cooper
+If Corr$	='Mostinski' Then h = h_Mostinski
 End
+"~~~~~~~~~~~~~~~~~~~~"
+Function bundle_convective_coeffcient(F$,T,m_dot,D)
+{
+Ref.: Chapter 9, Engineering Data Book III
+}
+ 
+rho_l		= propssi('D','T',T_sat,'Q',0,F$) "liquid density"
+mu_l		= propssi('V','T',T_sat,'Q',0,F$) "liquid viscosity"
+k_l			= propssi('L','T',T_sat,'Q',0,F$) "liquid thermal conductivity"
+ 
+delta 		= (D_delta-D)/2 "liquid thin film"
+ 
+ 
+Re 			= 4*rho_l*u_l*delta/mu_l
+ 
+alpha		= 4.032*Re^(0.236)*Pr^(0.4)*(k_l/delta)
+ 
+bundle_convective_coeffcient = alpha
+ 
+ 
+End 
 "~~~~~~~~~~~~~~~~~~~~"
 $bookmark Thermosyphon: Rohsenow correlation for condensation
 Procedure cond_vertical_tpct_rohsenow(F$,T_sat,T_w,L:h,Arg)
@@ -449,9 +472,7 @@ Q_dot_ent	= 3.2*h_lv*A_v*(rho_v^(-0.25)+rho_l^(-0.25))^(-2)*(sigma*g#*(rho_l-rho
 Q_dot_boil	= (pi#*D*L_e)*0.149*rho_v*h_lv*((sigma*(rho_l-rho_v)*g#)/rho_v^2)^(0.25)
 Q_dot_son	= 0.474*A_v*h_lv*(rho_v*P_sat)^(0.5)
  
-If (Q_dot>Q_dot_ent) Then Call warning('The heat transfer rate of thermosyphon must me lower than entrainment limit')
-If (Q_dot>Q_dot_boil) Then Call warning('The heat transfer rate of thermosyphon must me lower than boiling limit')
-If (Q_dot>Q_dot_son) Then Call warning('The heat transfer rate of thermosyphon must me lower than sonic limit')
+If (Q_dot>min(Q_dot_ent,Q_dot_boil,Q_dot_son)) Then Call warning('The heat transfer rate of thermosyphon must be lower than minimum operating limit. You should modify some pipe geometrical parameters, e.g. pipe diameter')
  
 End
 "~~~~~~~~~~~~~~~~~~~~"
@@ -488,15 +509,21 @@ phi_cond 	= figureofmerit_cond(F$,T_sat)
  
 R_ESDU	= 0.235*Q^(1/3)/(D^(4/3)*g#^(1/3)*L_c*phi_cond^(4/3))
  
-If (Re_f > 1300) Then 
+If (Re_f > 1300) Then
+	Call warning('The value of Re_f is larger than 1300')
 	R = R_ESDU*191*Re_f^(-0.733)
 Else
 	If (Re_f<50) Then
-		Call error('These equations are not applicable for Re < 50')
+		Call warning('These equations are not applicable for Re_f < 50, the value of R is assiged as R_ESDU')
+		R = R_ESDU		
 	Else
+		Call warning('The value of Re_f is greater than 50 and lower than 1300')
 		R = R_ESDU
 	Endif
 Endif
+ 
+// R =  0.345*Q^(1/3)/(D^(4/3)*g#^(1/3)*L_c*phi_cond^(4/3)) "Groll and Rosler correlation in  Marcia BHM. Thermosyphon Technology for Industrial Applications.  Heat Pipes and Solid Sorption Transformations: CRC Press; 2013. p. 411-64."
+// Ref.:MacGregor RW, Kew PA, Reay DA. Investigation of low Global Warming Potential working fluids for a closed two-phase thermosyphon. Applied Thermal Engineering. 2013;51(1-2):917-25. 
  
 End
 "~~~~~~~~~~~~~~~~~~~~"
@@ -724,21 +751,22 @@ alpha_m	: mean heat transfer coefficient
 DELTAp	: Pressure drop
 Nusselt	: Nusselt number
 Re			: Reynolds number
-w_s		: 
-A_tot		: 
-A_t			:
-A_fpt		:
-eta_f		:}
+w_s		: flow velocity in the smallest cross section
+A_tot		: total outer surface is defined as the sum of free outer surface per tube, A_t, and total fin surface per tube
+A_t			: free outer surface per tube
+A_fpt		: total fin surface per tube
+eta_f		: fin efficiency
+A_to		: surface of bare tube without fin}
  
 If S_T/D_f < 1.5 Then Call warning('S_T/D_f should be greater than 1.5, the value of S_T/D_f is XXXF1',S_T/D_F)
  
-"Thermophysical properties"
+"! Fluid thermophysical properties"
 rho 		= propssi('D', 'P',P,'T',(T_in+T_out)/2,F$)
 mu 		= propssi('V', 'P',P,'T',(T_in+T_out)/2,F$)
 cp			= propssi('C', 'P',P,'T',(T_in+T_out)/2,F$)
 k			= propssi('L', 'P',P,'T',(T_in+T_out)/2,F$)
  
-"fins parameters"
+"! Fins parameters"
 s_f			= (1/n_f {- t_f})*convert(in, m) "fin spacing"
 a 			= s_f - t_f "free spacing between fins"
 "Straitened cross section of flow"
