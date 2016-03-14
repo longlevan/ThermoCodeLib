@@ -38,9 +38,9 @@ Call thermalresistance_boiling_esdu(F$,Q_dot_radial,D_i,L_e,T_v_e,F_r:R_film,R_p
 Call thermalresistance_cond_esdu(F$,Q_dot_radial,T_v_c,D_i,L_c:R_c_i, Re_f_c) "condenser internal thermal resistance" 
  
 "Pressure drop: Ref. VDI 2010" 
-P_v_e			= propssi('P','T',T_v_e,'Q',1,F$) "vapour pressure at evaporator section"
+P_v_e				= propssi('P','T',T_v_e,'Q',1,F$) "vapour pressure at evaporator section"
 DELTAP_v 		= deltap_v(F$,T_v_e,Q_dot_radial,D_i,L_eff) "Assuming that vapour diameter is tube internal diameter"
-P_v_c			= P_v_e-DELTAP_v "vapour pressure at condenser section"
+P_v_c				= P_v_e-DELTAP_v "vapour pressure at condenser section"
 "~~~~~~~~~~~~~~~~~~~~~~"
 "! Energy balance in evaporator and condenser sections; system of equation; variables: Q_dot_radial, Q_dot_axial, T_we_o,T_we_i,T_v_e,T_v_c,T_wc_i,T_wc_o" 
 $VarInfo Q_dot_radial Guess=1e4 Lower=0
@@ -57,43 +57,43 @@ $VarInfo P_v_e Guess=20e5 Lower=2e5 Upper=20e6
 $VarInfo P_v_c Guess=20e5 Lower=2e5 Upper=20e6 
  
 Q_dot_radial+Q_dot_axial	= (T_e_o-T_we_o)/R_e_o "equation 1"
-Q_dot_radial 			= (T_we_o-T_we_i)/R_we "equation 2"
-Q_dot_radial 			= (T_we_i-T_v_e)/R_e_i "equation 3"
+Q_dot_radial 				= (T_we_o-T_we_i)/R_we "equation 2"
+Q_dot_radial 				= (T_we_i-T_v_e)/R_e_i "equation 3"
  
-T_v_c				= propssi('T','P',P_v_c,'Q',1,F$) "equation 4"
+T_v_c						= propssi('T','P',P_v_c,'Q',1,F$) "equation 4"
  
-Q_dot_radial   			= (T_v_c-T_wc_i)/R_c_i "equation 5"
-Q_dot_radial    		= (T_wc_i-T_wc_o)/R_wc "equation 6"
+Q_dot_radial   				= (T_v_c-T_wc_i)/R_c_i "equation 5"
+Q_dot_radial    			= (T_wc_i-T_wc_o)/R_wc "equation 6"
 Q_dot_radial+Q_dot_axial	= (T_wc_o-T_c_o)/R_c_o "equation 7"
  
-Q_dot_axial			= (T_we-T_wc)/R_axial "equation 8" 
-T_we				= (T_we_i+T_we_o)/2 "average wall temperature of evaporator section"
-T_wc 				= (T_wc_i+T_wc_o)/2 "average wall temperature of condenser section"
+Q_dot_axial				= (T_we-T_wc)/R_axial "equation 8" 
+T_we						= (T_we_i+T_we_o)/2 "average wall temperature of evaporator section"
+T_wc 						= (T_wc_i+T_wc_o)/2 "average wall temperature of condenser section"
 "~~~~~~~~~~~~~~~~~~~~~~" 
 "! Verification step"
 {"Heat of vaporization"
-h_lv_e				= propssi('H','P',P_v_e,'Q',1,F$)-propssi('H','P',P_v_e,'Q',0,F$)
-h_lv_c				= propssi('H','P',P_v_c,'Q',1,F$)-propssi('H','P',P_v_c,'Q',0,F$)
+h_lv_e					= propssi('H','P',P_v_e,'Q',1,F$)-propssi('H','P',P_v_e,'Q',0,F$)
+h_lv_c					= propssi('H','P',P_v_c,'Q',1,F$)-propssi('H','P',P_v_c,'Q',0,F$)
 "Additional thermal resistance"
-R4				= (R#*T_v_e^2*(2*pi#*R#*T_v_e)^0.5)/(h_lv_e^2*P_v_e*A_e_o)
-R5				= (T_v_e-T_v_c)/Q_dot_radial
-R6				= (R#*T_v_c^2*(2*pi#*R#*T_v_c)^0.5)/(h_lv_c^2*P_v_c*A_c_o)
+R4						= (R#*T_v_e^2*(2*pi#*R#*T_v_e)^0.5)/(h_lv_e^2*P_v_e*A_e_o)
+R5						= (T_v_e-T_v_c)/Q_dot_radial
+R6						= (R#*T_v_c^2*(2*pi#*R#*T_v_c)^0.5)/(h_lv_c^2*P_v_c*A_c_o)
 "Thermosyphon overal thermal resistance"
 R_tot					= R_e_o+1/(1/(R_we+R_e_i+R4+R5+R6+R_c_i+R_wc)+1/R_axial)+R_c_o
 "! Determine the pressure in the pool basis using the equation 11.41 inf Ref. and obtain the saturated temperature for p_P"
 "The liquid pressure in the pool base is larger than the vapour pressure, due to the column of liquid in the pool. The boiling phenomena almost do not influence the pressure in the evaporator basis "
-rho_l	= propssi('D','P',P_v_e,'Q',0,F$)
-p_P	= P_v_e+rho_l*g#*L_e*F_r*sin(beta) "liquid pressure in the pool base, where beta is the thermosyphon inclination angle with the horizontal position"
-T_P	= propssi('T','P',p_P,'Q',0,F$) "liquid temperature in the pool base" 
+rho_l					= propssi('D','P',P_v_e,'Q',0,F$)
+p_P					= P_v_e+rho_l*g#*L_e*F_r*sin(beta) "liquid pressure in the pool base, where beta is the thermosyphon inclination angle with the horizontal position"
+T_P					= propssi('T','P',p_P,'Q',0,F$) "liquid temperature in the pool base" 
 "! Determine DELTAT_h using equation 11.43 in Ref."
 "For most of the operation conditions, DELTAT_h is very small and can be neglected. On the other hand, this difference may be important for fluid operating in low temperature levels and, therefore, low vapour pressures"
-DELTAT_h	= (T_P-T_v_e)*F_r/2
+DELTAT_h				= (T_P-T_v_e)*F_r/2
 "! Determine the global temperature difference"
-DELTAT 		= T_e_o-T_c_o-DELTAT_h
+DELTAT 				= T_e_o-T_c_o-DELTAT_h
 "Total heat transfer rate" 
-Q_dot_tot	= DELTAT/R_tot}
+Q_dot_tot				= DELTAT/R_tot}
 "~~~~~~~~~~~~~~~~~~~~~~" 
-Q_dot		= Q_dot_radial+Q_dot_axial
+Q_dot				= Q_dot_radial+Q_dot_axial
 "! Limites de fonctionnement"
 Call tctp_operatinglimits(F$,D_i,L_e,T_v_e,Q_dot:Q_dot_ent,Q_dot_boil,Q_dot_son) "assuming that vapour diameter is tube internal diameter d_v = D_i"
 "~~~~~~~~~~~~~~~~~~~~~~"
@@ -105,11 +105,11 @@ $Bookmark 4. Main program
 $Bookmark 4.1. Parameters, inputs
 "! Heat source inputs"
 ExGasCMI$ 	= 'heos::CO2[0.0854]&Water[0.1634]&Oxygen[0.0248]&Nitrogen[0.7264]' "heat source medium: natural gas combustion fumes, CMI data"
-p_in_f		= 101325 [Pa] "fumes inlet pressure in Pa"
+p_in_f			= 101325 [Pa] "fumes inlet pressure in Pa"
 ORCAL$ 		= 'Case2' "! pay attention to the exported datat to excel"
  
 $IF ORCAL$='ORCAL'
-T_in_f		= 820 + 273.15 "fumes inlet temperature in K"
+T_in_f			= 820 + 273.15 "fumes inlet temperature in K"
 T_out_target_f	= 620 + 273.15 "! heat source target outlet temperature"
 M_dot_f		= 28.75 [kg/s] "fumes mass flow rate"
 V_dot_f		= M_dot_f/rho_in_f "fumes volume flow rate"
@@ -479,7 +479,7 @@ excel.show
 {pause 2
 excel.Quit}
  
-// Save the existing file after running the program test again
+// Save the existing file after running the program
 Save 
  
 open C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\StaticModels\ORCAL_ORC_Sizing_Optim_20160301_beta.EES
