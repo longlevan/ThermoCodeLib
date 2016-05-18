@@ -1,0 +1,354 @@
+$Unitsystem SI K Pa J mass rad
+$Tabstops 0.2 0.4 0.6 0.8 1.0
+$Allow '//'
+$Updategusses
+$Reference n-pentane NBP
+$include C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\ORCAL_Components.LIB 
+$include C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\CAPCOST\CAPCOST.LIB
+"<><><><><><><><><><><><><><><><><><><><><><><><><><><><>"
+$Bookmark 1. Instruction and nomenclature
+// PropSI routines in CoolProp can only work with K, Pa, J, mass set of units. Please verify your Unit System definition
+// Using CoolProp lib may decrease compilation time
+// The code should be properly developped without figure and table
+// Be careful with the converge of program
+// The heat transfer rate of heat source is fixed for this model
+"! Nomenclature"
+{
+} 
+"<><><><><><><><><><><><><><><><><><><><><><><><><><><><>"
+$Bookmark 4. Main program
+$Bookmark 4.1. Parameters, inputs
+"! imported inputs"
+//$Import 'C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\Data\To_ORC1.csv' ORCF$, m_dot_f, T_in_f, T_out_f
+ 
+"! Heat source inputs"
+ExGasCMI$ 	= 'heos::CO2[0.0854]&Water[0.1634]&Oxygen[0.0248]&Nitrogen[0.7264]' "heat source medium: natural gas combustion fumes, CMI data"
+p_in_f			= 101325 [Pa] "pressure of exhaust gas"
+// imported
+T_in_f 			= 820+273.15 "nominal temperature of exhaust gas"
+T_out_f 		= 620 + 273.15 "exhaust gas outlet temperature"
+m_dot_f		= 28.75 [kg/s] "nominal mass flow rate of exhaust gas"
+cp_f			= propssi('C','T',(T_in_f+T_out_f)/2,'P',p_in_f,ExGasCMI$)
+Q_dot_f		= m_dot_f*cp_f*(T_in_f-T_out_f)
+ 
+"! ORC inputs"
+// imported
+ORCF$ 		= 'n-pentane' "ORC working fluid"
+$IFNOT ParametricTable = 'T_ev_wf'
+	T_ev_wf	= 140+273.15
+$ENDIF
+T_ev_wf_C		= converttemp(K,C,T_ev_wf) "evaporating temperature in °C"
+P_ev_wf		= propssi('P','T',T_ev_wf,'Q',0,ORCF$) "evaporating pressure in Pa"
+p_r_ev 			= P_ev_wf/P_crit_wf 
+T_cd_wf		= 50+273.15 "condensing temperature or bubble point temperature at condensing pressure, in K"
+P_cd_wf		= propssi('P','T',T_cd_wf,'Q',0,ORCF$) "condensing pressure in Pa"
+p_r_cd			= P_cd_wf/P_crit_wf "reduced condensing pressure"
+T_b_wf			= propssi('T','P',101325,'Q',0,ORCF$) "normal boiling point temperature"
+T_crit_wf		= propssi('Tcrit','',0,'',0,ORCF$) "critical temperature in K"
+P_crit_wf		= propssi('Pcrit','',0,'',0,ORCF$) "critical pressure in Pa"
+T_crit_wf_C	= converttemp(K,C,T_crit_wf) "critical temperature in °C"
+ 
+"! tubomachinenary inputs"
+epsilon_s_tur 	= {eta_tur}0.8 [-] "turbine isentropic efficiency"
+eta_gen		= 0.9 "electrical generator efficiency"
+epsilon_s_pp 	= 0.7 [-] "pump isentropic efficiency"
+eta_motor		= 0.9 "electrical motor efficiency"
+ 
+"! common inputs"
+P_atm = 101325
+"~~~~~~~~~~~~~~~~~~~~"
+$Bookmark 4.2 Equation
+"! Initialization and update guesses: an very important step to advoid the simulation failure is to set the initial value and update the guesses"
+//m_dot_wf		= 28 [kg/s] "mass flow rate of ORC working fluid"
+$Varinfo m_dot_wf guess=31.88 Units='kg/s'
+Q_dot_h 		= Q_dot_f "heat transfer rate of heat source"
+Q_dot_h 		= m_dot_wf*(h_in_tur- h_l_out_rec)
+ 
+"! Pump"
+Call pump1(ORCF$,P_cd_wf,P_ev_wf,h_in_pp,m_dot_wf,epsilon_s_pp: h_out_pp,W_dot_pp)
+SC$ = 'True' "sub-cooling"
+$IF SC$ = 'True'
+	SC  		= 10 "working fluid temperature at condenser outlet is set to be lower than saturation temperature 10°C to advoid cavitation"
+	T_in_pp	= T_cd_wf - SC
+	h_in_pp 	= propssi('H','P',P_cd_wf,'T',T_in_pp,ORCF$)
+$ELSE
+	SC  		= 0
+	T_in_pp	= T_cd_wf - SC
+	h_in_pp 	= propssi('H','P',P_cd_wf,'Q',0,ORCF$) "pump inlet temperature"
+$ENDIF
+T_out_pp	= propssi('T','P',P_ev_wf,'h',h_out_pp,ORCF$)
+ 
+"! Turbine"
+Call turbine1(ORCF$, P_ev_wf, P_cd_wf, h_in_tur, m_dot_wf, epsilon_s_tur: h_out_tur, W_dot_tur, eta_s_tur)
+SH$ = 'False' "superheating, False is without superheating"
+$IF SH$='True'
+	SH 			= 5 "superheating"
+	T_in_tur 	= T_ev_wf+SH
+	h_in_tur 	= propssi('H','P',P_ev_wf,'T',T_in_tur,ORCF$)
+$ELSE
+	SH 			= 0 "superheating"
+	T_in_tur 	= T_ev_wf+SH
+	h_in_tur 	= propssi('H','P',P_ev_wf,'Q',1,ORCF$) "turbine inlet enthalpy"
+$ENDIF
+ 
+T_out_tur 			= propssi('T','P',P_cd_wf,'H',h_out_tur,ORCF$)
+s_in_tur 			= propssi('S','P',P_ev_wf,'H',h_in_tur,ORCF$)
+V_dot_in_tur 		= m_dot_wf/propssi('D','P',P_ev_wf,'H',h_in_tur,ORCF$)
+V_dot_out_s_tur 	= m_dot_wf/propssi('D','P',P_cd_wf,'S',s_in_tur,ORCF$)
+h_out_s_tur		= propssi('H','P',P_cd_wf,'S',s_in_tur,ORCF$)
+W_tur				= h_in_tur-h_out_tur
+ 
+Call axial_turbine_stage_efficiency(ORCF$,m_dot_wf, h_in_tur,P_ev_wf,P_cd_wf,stage_N#:eta_tur,V_r,SP,N_S_tur,RPM_tur,SP_last)
+stage_N# = 1
+ 
+"! Shell-and-tube recuperator"
+"Sizing shell-and-tube recuperator"
+V_tube 		= 4 [ft/s]*convert(ft/s,m/s) "fluid velocity inside tube: 3-8 ft/s for liquid"
+N_tp 			= 6 "tube pass number"
+N_sp			= 3 "shell pass number"
+OD 			= {1/2}1 [inch]*convert(inch,m) "tube outer diameter in m"
+ID				= {0.430}0.870 [inch]*convert(inch,m) "tube inner diameter"
+L_tube			= L_hex_rec "Initial value of tube length"
+epsilon_tube 	= 0 "additional value for hex tube number"
+Pitch_r			= 1.5 "1.33 or 1.5"
+X_B 			= 0.8 "0.2 - 1.0"
+Tube_Mat$ 	= 'carbon_steel'
+R_ft 			= 0
+Rec$ 			= 'True'
+ 
+$IF Rec$ = 'True' 
+$varinfo h_v_out_rec guess=h_out_tur
+$varinfo h_l_out_rec guess=h_out_pp
+$varinfo P_v_out_rec guess=2e5
+$varinfo P_l_out_rec guess=20e5
+DELTAT_pp_rec = 10 "pinch point temperature approach"
+Call hex(ORCF$,0,m_dot_wf, h_out_tur, P_cd_wf,ORCF$, 0, m_dot_wf,h_out_pp, P_ev_wf, DELTAT_pp_rec, 0, 0: h_v_out_rec, P_v_out_rec, h_l_out_rec, P_l_out_rec, Q_dot_rec, eff_rec)
+ 
+Call hex_1(V_tube,N_tp,N_sp,OD,ID,L_tube,epsilon_tube,Pitch_r, X_B,Tube_Mat$,R_ft,ORCF$,m_dot_wf,P_ev_wf, T_out_pp,T_l_out_rec,ORCF$,m_dot_wf,P_cd_wf,T_out_tur,T_v_out_rec:N_t_rec,D_shell_rec,h_tube_rec,h_shell_rec,DELTAp_tube_rec,DELTAp_shell_rec,U_f_rec,LMTD_rec,Q_dot_h_rec,A_hex_rec,L_hex_rec,over_design) 
+$ELSE
+h_v_out_rec 	= h_out_tur
+P_v_out_rec 	= P_cd_wf
+h_l_out_rec 	= h_out_pp
+P_l_out_rec	= P_ev_wf
+Q_dot_rec		= 0
+eff_rec			= 0
+A_hex_rec		= 0
+L_hex_rec	 	= 0
+$ENDIF
+L_hex_rec_ft 	= L_hex_rec*convert(m,ft)
+ 
+T_l_out_rec	= propssi('T','P',P_ev_wf,'H',h_l_out_rec,ORCF$)
+T_v_out_rec	= propssi('T','P',P_cd_wf,'H',h_v_out_rec,ORCF$)
+ 
+"! Horizontal shell-side condenser"
+Coolant$ 		= 'Water' "condenser cooling medium"
+P_cool_in 		= 2e5 [Pa] "cooling medium inlet pressure"
+DP_coolant	= 0 [Pa] "pressure drop of cooling medium"
+ 
+h_cool_cdv		= h_cool_out-m_dot_wf*(h_v_out_rec-propssi('H','P',P_cd_wf,'Q',1,ORCF$))/m_dot_coolant "correspond to saturated vapour state of condensation process: cdv"
+T_cool_cdv		= propssi('T','P',P_cool_in,'H',h_cool_cdv,Coolant$)
+ 
+h_cool_cdl		= m_dot_wf*(propssi('H','P',P_cd_wf,'Q',0,ORCF$)-h_in_pp)/m_dot_coolant+h_cool_in "correspond to saturated liquid state of organic fluid condensation process: cdl"
+T_cool_cdl		= propssi('T','P',P_cool_in,'H',h_cool_cdl,Coolant$)
+ 
+"water temperature at outlet condenser (or inlet cooling tower)"
+$varinfo T_cool_out guess=313 Lower=T_cool_in units='K'
+DELTAT_pp_cond	= 10 "condenser pinch point approach"
+DELTAT_pp_cond = min(T_in_pp - T_cool_in,T_v_out_rec-T_cool_out,T_cd_wf-T_cool_cdv,T_cd_wf-T_cool_cdl)
+ 
+h_cool_out		= propssi('H','T',T_cool_out,'P',P_cool_in-DP_coolant,Coolant$)
+T_cool_in		= 25+273.15{T_cool_out - 10} "water temperature at inlet condenser (or oulet cooling tower)"
+h_cool_in		= propssi('H','T',T_cool_in,'P',P_cool_in,Coolant$)
+M_dot_coolant	= m_dot_wf*(h_v_out_rec-h_in_pp)/(h_cool_out-h_cool_in)
+Q_dot_cond	= M_dot_coolant*(h_cool_out-h_cool_in)
+ 
+"condenser sizing"
+Call condenser_sizing(V_tube_cond,1,1,OD_cond,ID_cond,L_tube_cond,0,'square',Pitch_r, X_B,0.25,Tube_Mat$,0,'water',m_dot_coolant,T_cool_in,T_cool_out,P_cool_in,ORCF$,T_cd_wf,m_dot_wf,T_w_cond,0:N_t_cond,D_shell_cond,h_tube_cond,h_shell_cond,DELTAp_tube_cond,DELTAp_shell_cond,U_c_cond,U_f_cond,LMTD_cond,Q_dot_cond1,A_hex_cond,L_hex_cond,over_design_cond)
+ 
+OD_cond 		= 1 [inch]*convert(inch,m) "condenser tube outer diameter"
+ID_cond		= 0.870 [inch]*convert(inch,m) "condenser tube inner diameter"
+V_tube_cond 	= 4 [ft/s]*convert(ft/s,m/s) "flow velocity inside condenser tube"
+ 
+q_flux_cond1	= U_f_cond*LMTD_cond 
+q_flux_cond 	= {U_f_cond*LMTD_cond}Q_dot_cond/A_hex_cond
+T_w_cond 		= T_cd_wf-q_flux_cond/h_shell_cond
+//T_w_cond	= (T_cd_wf +average(T_cool_in,T_cool_out))/2
+//$Trace /5000 LMTD_cond T_w_cond
+ 
+L_tube_cond 	= L_hex_cond "condenser tube length"
+ 
+"! cooling tower sizing"
+Call cooling_tower_design(M_dot_coolant,T_cool_out,T_cool_in,T_a_in,T_a_out,RH_a_in,RH_a_out,altitude,COC,fill$,L_cell,W_cell,blower_power_cell,Cost_cell,cfm_cell,DP_cond,eta_pp,CEPCI:T_wetbulb,T_dp,Capacity, Range, Approach,M_wm,L,G,KaV\L,Q_dot,A_floor,H_fill,H_rz,H_sp,H_tower,P_pp,P_fan_SI,Cost_bm_Ctower)
+ 
+V_wm_anual = M_wm/1000*7884*3600 "annual volume make up water"
+ 
+T_a_in 			= 14+273.15 "inlet air temperature"
+T_a_out		= (T_cool_in+T_cool_out)/2 "outlet air temperature"
+RH_a_in 		= 0.8 "air inlet relative humidity"
+RH_a_out 		= 1 "air outlet relative humidy"
+altitude 		= 0 "altitude of cooling twoer"
+COC 			= 3 "cycle of concentration"
+fill$ 			= 'film' "fill type"
+ 
+L_cell 			= 2.38 "cell length in m"
+W_cell 		= 5.52 "cell width in m"
+blower_power_cell	= 25 "HP"
+Cost_cell		= 37370 "price of each cell in US dollar"
+cfm_cell		= 95000 "ft^3/min"
+ 
+"Overall system"
+W_dot_ORC 	= W_dot_tur*eta_gen - W_dot_pp/eta_motor-P_pp/eta_motor-P_fan_SI "system net power output"
+W_dot_ORC1	= Q_dot_f-Q_dot_cond
+eta_ORC		= W_dot_ORC/Q_dot_h
+DELTAh_ev	= h_in_tur-h_l_out_rec
+DP_cond 		= 0
+eta_pp			= 0.7
+ 
+"~~~~~~~~~~~~~~~~~~~~"
+$bookmark economic analysis
+"! Capital investment"
+"Equipment barre module cost"
+CEPCI 	= 580.1 "Chemical Engineering Plant Cost Index"
+ 
+Call bare_module_cost('Turbine','Axial','CS',P_ev_wf,W_dot_tur/1000,3.5,CEPCI:Cost_p0_tur,Cost_p_tur,F_p_tur,F_m_tur,F_bm_tur,Cost_bm0_tur,Cost_bm_tur) "axial turbine cost"
+Call bare_module_cost('Pump','Centrifugal','CS',P_ev_wf,W_dot_pp/1000,0,CEPCI:Cost_p0_pp,Cost_p_pp,F_p_pp,F_m_pp,F_bm_pp,Cost_bm0_pp,Cost_bm_pp) "centrifugal pump cost (including electric drives)"
+Call bare_module_cost('HEX','Fixed Tube ST 140','CS',P_ev_wf,A_hex_rec,0,CEPCI:Cost_p0_rec,Cost_p_rec,F_p_rec,F_m_rec,F_bm_rec,Cost_bm0_rec,Cost_bm_rec) "fixed tube shell-and-tube recuperator cost"
+Call bare_module_cost('HEX','Fixed Tube ST 140','CS',max(P_cd_wf,P_cool_in),A_hex_cond,0,CEPCI:Cost_p0_cond,Cost_p_cond,F_p_cond,F_m_cond,F_bm_cond,Cost_bm0_cond,Cost_bm_cond) "fixed tube shell-and-tube horizontal shell-side condenser"
+ 
+Cost_tbm = cost_bm_cond+cost_bm_rec+cost_bm_tur{Cost_tur_alfistol}+cost_bm_pp+Cost_bm_Ctower + Cost_gen+Cost_gearbox "total bare module cost of equipments"
+ 
+Cost_tbm0 = cost_bm0_cond+cost_bm0_rec+cost_bm0_tur+cost_bm0_pp+Cost_bm_Ctower + Cost_bm_hphex "total bare module cost"
+ 
+Call total_capital_investment(cost_tbm:C_site,C_serv,C_alloc,C_DPI,C_cont,C_TDC,C_TPI,C_TCI)
+ 
+Call grassroots_cost(Cost_tbm0,Cost_tbm:C_TM, C_GR)
+ 
+SIC 	= C_TCI/(W_dot_orc/1000)
+ 
+Cost_bm_hphex 	= 27759*(Q_dot_f/520000)^(0.6)*2.45
+ 
+Cost_tur_Alfistol 	= (1230e3*(stage_N#/2)^(0.5)*(SP_last/0.18)^(1.1))*1.09 "turbine cost in €"
+Cost_SST_060		= 381*W_dot_tur
+Cost_tur1			= 6000*(W_dot_tur/1000)^0.7
+Cost_tur_Leighton	= 1360*(W_dot_tur/1000)^0.81*1.5
+ 
+Cost_gen 			= 200e3*(W_dot_tur/(5000e3))^(0.67)
+Cost_gen1 		= 60*(W_dot_tur/1000)^0.95
+Cost_gen_Leighton = 23375*(W_dot_tur/100e3)^0.6
+Cost_gearbox		= 0.4*Cost_gen
+Cost_pump1 		= 14e3*(W_dot_pp/(200e3))^(0.67)
+ 
+"! OPEX could be estimated as 5% of capex"
+OPEX 				= 0.05*C_TCI
+ 
+Cost_coolingwater 	= V_wm_anual/1000*14.8
+Cost_WB 			= (C_TCI/1.1)*0.035
+Cost_SBMS 		= 0.5*Cost_WB
+Cost_MO 			= 0.05*Cost_WB
+Cost_PI 			= 0.02*(C_TCI/1.1)
+OPEX1 			= Cost_coolingwater+Cost_WB+Cost_SBMS+Cost_MO+Cost_PI
+ 
+"! sales revenue"
+ 
+Saving_el 			= 0.9*365*24*(W_dot_ORC/1000)
+S_annual 			= 0.9*365*24*(W_dot_ORC/1000)*0.1
+ 
+CO2_emit 			= Saving_el*77
+ 
+"! profit"
+profit_gross 		= S_annual-Opex "gross profit"
+profit_net 			= (1-0.33)*profit_gross
+Cost_D 			= 0.08*(C_TCI/1.1)
+ 
+roi 					= profit_net/C_TCI
+PBP 				= (C_TCI/1.1)/(profit_net+Cost_D) 
+ 
+"~~~~~~~~~~~~~~~~~~~~"
+$Bookmark Plotting
+ 
+"! Component outlet T-s profile"
+"Pump outlet"
+T_comp[1] = propssi('T','P',P_ev_wf,'H',h_out_pp,ORCF$)
+s_comp[1] = propssi('S','P',P_ev_wf,'H',h_out_pp,ORCF$)
+ 
+"Recuperator - Cold side outlet"
+T_comp[2] = propssi('T','P',P_ev_wf,'H',h_l_out_rec,ORCF$)
+s_comp[2] = propssi('S','P',P_ev_wf,'H',h_l_out_rec,ORCF$)
+ 
+"Evaporator: saturated liquid"
+T_comp[3] = propssi('T','P',P_ev_wf,'Q',0,ORCF$)
+s_comp[3] = propssi('S','P',P_ev_wf,'Q',0,ORCF$)
+ 
+"Evaporator: saturate vapor"
+T_comp[4] = propssi('T','P',P_ev_wf,'Q',1,ORCF$)
+s_comp[4] = propssi('S','P',P_ev_wf,'Q',1,ORCF$)
+ 
+"Turbine inlet"
+T_comp[5] = propssi('T','P',P_ev_wf,'H',h_in_tur,ORCF$)
+s_comp[5] = propssi('S','P',P_ev_wf,'H',h_in_tur,ORCF$)
+ 
+"Turbine outlet"
+T_comp[6] = propssi('T','P',P_cd_wf,'H',h_out_tur,ORCF$)
+s_comp[6] = propssi('S','P',P_cd_wf,'H',h_out_tur,ORCF$)
+ 
+"Recuperator - Hot side"
+T_comp[7] = propssi('T','P',P_cd_wf,'H',h_v_out_rec,ORCF$)
+s_comp[7] = propssi('S','P',P_cd_wf,'H',h_v_out_rec,ORCF$)
+ 
+"Desuperheater outlet: saturated vapor"
+T_comp[8] = propssi('T','P',P_cd_wf,'Q',1,ORCF$)
+s_comp[8] = propssi('S','P',P_cd_wf,'Q',1,ORCF$)
+ 
+"Condenser: saturated liquid"
+T_comp[9] = propssi('T','P',P_cd_wf,'Q',0,ORCF$)
+s_comp[9] = propssi('S','P',P_cd_wf,'Q',0,ORCF$)
+ 
+T_comp[10] = propssi('T','P',P_cd_wf,'H',h_in_pp,ORCF$)
+s_comp[10] = propssi('S','P',P_cd_wf,'H',h_in_pp,ORCF$)
+ 
+"Heat source temperature profile"
+T_h[1] 		= T_in_f
+s_h[1] 		= s_comp[5]
+T_h[2] 		= T_out_f
+s_h[2]		= s_comp[2]
+ 
+"IHE Temperature profile"
+T_h_IHE[1] = T_comp[6]
+s_h_IHE[1] = s_comp[2]
+ 
+T_h_IHE[2] = T_v_out_rec
+s_h_IHE[2] = s_comp[1]
+ 
+"Cooling water temperature profile"
+T_c[1]		= T_cool_in
+s_c[1] 		= s_comp[10]
+T_c[2]		= T_cool_out
+s_c[2]		= s_comp[7]
+ 
+"Cool air temperature profile"
+T_a[1]		= T_a_in
+s_a[1]		= s_comp[10]
+T_a[2]		= T_a_out
+s_a[2]		= s_comp[7]
+ 
+"~~~~~~~~~~~~~~~~" 
+ 
+$bookmark Macro commands
+ 
+{$RunMacroAfter
+ 
+plot1$=concat$('T-s: ',ORCF$)
+DeletePlot plot1$ 
+PropPlot ORCF$ Ts 3 P_atm P_cd_wf P_ev_wf 0
+OverlayPlot Name=plot1$ Table=ArraysTable X=s_comp[i] Y=T_comp[i] Line=3 Symbol=15 Color=green Legend
+OverlayPlot Name=plot1$ Table=ARR X=s_c[i] Y=T_c[i] Line=3 Symbol=15 Color=blue Legend
+OverlayPlot Name=plot1$ Table=ARR X=s_a[i] Y=T_a[i] Line=3 Symbol=15 Color=purple Legend
+ModifyAxis X Name=plot1$ min=-500 max=2000 Linear int=500
+ModifyAxis Y Name=plot1$ min=250 max = 550 Linear int=50
+ 
+Export 'C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\Data\To_tphex.csv' P_pp, P_fan_SI
+save
+ 
+{open C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\StaticModels\ORCAL_Evaporator_20160302_beta.EES}
+ 
+$EndMacro }

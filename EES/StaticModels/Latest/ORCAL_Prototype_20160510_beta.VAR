@@ -1,0 +1,547 @@
+@22\1.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\1.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\1.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\1.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\1.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\1.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\1.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\1.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\1.DELTAP_V	1.9857E-01	-infinity	infinity	A3	1	
+@22\1.DELTAT	6.1992E+02	-infinity	infinity	A3	1	
+@22\1.DELTAT_H	8.3420E-02	-infinity	infinity	A3	1	
+@22\1.F$	'water'	-infinity	infinity	S0	1	
+@22\1.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\1.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\1.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\1.H_LV_C	2.0916E+06	-infinity	infinity	A0	1	
+@22\1.H_LV_E	2.0916E+06	-infinity	infinity	A0	1	
+@22\1.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\1.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\1.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\1.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\1.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\1.P_P	5.7660E+05	-infinity	infinity	A0	1	
+@22\1.P_V_C	5.7248E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\1.P_V_E	5.7248E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\1.Q_DOT	1.1686E+03	-infinity	infinity	A1	1	
+@22\1.Q_DOT_AXIAL	2.4288E-01	0.0000E+00	infinity	A1	1	
+@22\1.Q_DOT_BOIL	1.3662E+05	-infinity	infinity	A1	1	
+@22\1.Q_DOT_ENT	1.4245E+04	-infinity	infinity	A1	1	
+@22\1.Q_DOT_RADIAL	1.1684E+03	0.0000E+00	infinity	A1	1	
+@22\1.Q_DOT_SON	5.4263E+05	-infinity	infinity	A1	1	
+@22\1.Q_DOT_TOT	1.1679E+03	-infinity	infinity	A1	1	
+@22\1.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\1.R_C_I	7.2424E-03	-infinity	infinity	A3	1	
+@22\1.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\1.R_E_I	2.5629E-03	1.0000E-10	infinity	A3	1	
+@22\1.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\1.R_FILM	1.5990E-03	-infinity	infinity	A3	1	
+@22\1.R_POOL	3.2055E-03	-infinity	infinity	A3	1	
+@22\1.R_TOT	5.3077E-01	-infinity	infinity	A3	1	
+@22\1.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\1.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\1.R4	4.2988E-05	-infinity	infinity	A3	1	
+@22\1.R5	-6.9626E-08	-infinity	infinity	A3	1	
+@22\1.R6	1.9471E-04	-infinity	infinity	A3	1	
+@22\1.RE_F_C	1.7793E+02	-infinity	infinity	A3	1	
+@22\1.RHO_L	9.1036E+02	-infinity	infinity	A3	1	
+@22\1.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\1.T_E_O	1.0232E+03	2.7315E+02	1.0232E+03	A1	1	
+@22\1.T_P	4.3043E+02	-infinity	infinity	A1	1	
+@22\1.T_V_C	4.3015E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_V_E	4.3015E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WC	4.1922E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WC_I	4.2169E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WC_O	4.1675E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WE	4.3369E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WE_I	4.3314E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\1.T_WE_O	4.3423E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\3.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\3.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\3.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\3.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\3.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\3.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\3.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\3.DELTAP_V	1.9445E-01	-infinity	infinity	A3	1	
+@22\3.DELTAT	5.8886E+02	-infinity	infinity	A3	1	
+@22\3.DELTAT_H	8.6141E-02	-infinity	infinity	A3	1	
+@22\3.F$	'water'	-infinity	infinity	S0	1	
+@22\3.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\3.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\3.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\3.H_LV_C	2.0964E+06	-infinity	infinity	A0	1	
+@22\3.H_LV_E	2.0964E+06	-infinity	infinity	A0	1	
+@22\3.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\3.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\3.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\3.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\3.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\3.P_P	5.5512E+05	-infinity	infinity	A0	1	
+@22\3.P_V_C	5.5099E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\3.P_V_E	5.5099E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\3.Q_DOT	1.1103E+03	-infinity	infinity	A1	1	
+@22\3.Q_DOT_AXIAL	2.2922E-01	0.0000E+00	infinity	A1	1	
+@22\3.Q_DOT_BOIL	1.3476E+05	-infinity	infinity	A1	1	
+@22\3.Q_DOT_ENT	1.4102E+04	-infinity	infinity	A1	1	
+@22\3.Q_DOT_RADIAL	1.1100E+03	0.0000E+00	infinity	A1	1	
+@22\3.Q_DOT_SON	5.2401E+05	-infinity	infinity	A1	1	
+@22\3.Q_DOT_TOT	1.1096E+03	-infinity	infinity	A1	1	
+@22\3.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\3.R_C_I	7.1279E-03	-infinity	infinity	A3	1	
+@22\3.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\3.R_E_I	2.5950E-03	1.0000E-10	infinity	A3	1	
+@22\3.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\3.R_FILM	1.5737E-03	-infinity	infinity	A3	1	
+@22\3.R_POOL	3.2759E-03	-infinity	infinity	A3	1	
+@22\3.R_TOT	5.3070E-01	-infinity	infinity	A3	1	
+@22\3.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\3.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\3.R4	4.4084E-05	-infinity	infinity	A3	1	
+@22\3.R5	1.1050E-08	-infinity	infinity	A3	1	
+@22\3.R6	1.9967E-04	-infinity	infinity	A3	1	
+@22\3.RE_F_C	1.6697E+02	-infinity	infinity	A3	1	
+@22\3.RHO_L	9.1178E+02	-infinity	infinity	A3	1	
+@22\3.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\3.T_E_O	9.9210E+02	2.7315E+02	1.0232E+03	A1	1	
+@22\3.T_P	4.2896E+02	-infinity	infinity	A1	1	
+@22\3.T_V_C	4.2868E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_V_E	4.2868E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WC	4.1842E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WC_I	4.2076E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WC_O	4.1607E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WE	4.3207E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WE_I	4.3156E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\3.T_WE_O	4.3259E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\4.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\4.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\4.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\4.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\4.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\4.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\4.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\4.DELTAP_V	1.9012E-01	-infinity	infinity	A3	1	
+@22\4.DELTAT	5.5920E+02	-infinity	infinity	A3	1	
+@22\4.DELTAT_H	8.8817E-02	-infinity	infinity	A3	1	
+@22\4.F$	'water'	-infinity	infinity	S0	1	
+@22\4.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\4.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\4.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\4.H_LV_C	2.1008E+06	-infinity	infinity	A0	1	
+@22\4.H_LV_E	2.1008E+06	-infinity	infinity	A0	1	
+@22\4.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\4.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\4.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\4.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\4.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\4.P_P	5.3532E+05	-infinity	infinity	A0	1	
+@22\4.P_V_C	5.3119E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\4.P_V_E	5.3119E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\4.Q_DOT	1.0545E+03	-infinity	infinity	A1	1	
+@22\4.Q_DOT_AXIAL	2.1630E-01	0.0000E+00	infinity	A1	1	
+@22\4.Q_DOT_BOIL	1.3300E+05	-infinity	infinity	A1	1	
+@22\4.Q_DOT_ENT	1.3966E+04	-infinity	infinity	A1	1	
+@22\4.Q_DOT_RADIAL	1.0543E+03	0.0000E+00	infinity	A1	1	
+@22\4.Q_DOT_SON	5.0677E+05	-infinity	infinity	A1	1	
+@22\4.Q_DOT_TOT	1.0539E+03	-infinity	infinity	A1	1	
+@22\4.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\4.R_C_I	7.0147E-03	-infinity	infinity	A3	1	
+@22\4.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\4.R_E_I	2.6283E-03	1.0000E-10	infinity	A3	1	
+@22\4.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\4.R_FILM	1.5487E-03	-infinity	infinity	A3	1	
+@22\4.R_POOL	3.3480E-03	-infinity	infinity	A3	1	
+@22\4.R_TOT	5.3062E-01	-infinity	infinity	A3	1	
+@22\4.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\4.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\4.R4	4.5163E-05	-infinity	infinity	A3	1	
+@22\4.R5	1.2922E-08	-infinity	infinity	A3	1	
+@22\4.R6	2.0456E-04	-infinity	infinity	A3	1	
+@22\4.RE_F_C	1.5672E+02	-infinity	infinity	A3	1	
+@22\4.RHO_L	9.1312E+02	-infinity	infinity	A3	1	
+@22\4.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\4.T_E_O	9.6244E+02	2.7315E+02	1.0232E+03	A1	1	
+@22\4.T_P	4.2757E+02	-infinity	infinity	A1	1	
+@22\4.T_V_C	4.2727E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_V_E	4.2727E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WC	4.1765E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WC_I	4.1988E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WC_O	4.1542E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WE	4.3054E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WE_I	4.3005E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\4.T_WE_O	4.3103E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\5.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\5.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\5.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\5.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\5.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\5.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\5.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\5.DELTAP_V	1.8560E-01	-infinity	infinity	A3	1	
+@22\5.DELTAT	5.3089E+02	-infinity	infinity	A3	1	
+@22\5.DELTAT_H	9.1453E-02	-infinity	infinity	A3	1	
+@22\5.F$	'water'	-infinity	infinity	S0	1	
+@22\5.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\5.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\5.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\5.H_LV_C	2.1050E+06	-infinity	infinity	A0	1	
+@22\5.H_LV_E	2.1050E+06	-infinity	infinity	A0	1	
+@22\5.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\5.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\5.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\5.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\5.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\5.P_P	5.1706E+05	-infinity	infinity	A0	1	
+@22\5.P_V_C	5.1292E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\5.P_V_E	5.1292E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\5.Q_DOT	1.0013E+03	-infinity	infinity	A1	1	
+@22\5.Q_DOT_AXIAL	2.0408E-01	0.0000E+00	infinity	A1	1	
+@22\5.Q_DOT_BOIL	1.3133E+05	-infinity	infinity	A1	1	
+@22\5.Q_DOT_ENT	1.3836E+04	-infinity	infinity	A1	1	
+@22\5.Q_DOT_RADIAL	1.0011E+03	0.0000E+00	infinity	A1	1	
+@22\5.Q_DOT_SON	4.9081E+05	-infinity	infinity	A1	1	
+@22\5.Q_DOT_TOT	1.0006E+03	-infinity	infinity	A1	1	
+@22\5.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\5.R_C_I	6.9027E-03	-infinity	infinity	A3	1	
+@22\5.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\5.R_E_I	2.6628E-03	1.0000E-10	infinity	A3	1	
+@22\5.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\5.R_FILM	1.5240E-03	-infinity	infinity	A3	1	
+@22\5.R_POOL	3.4219E-03	-infinity	infinity	A3	1	
+@22\5.R_TOT	5.3055E-01	-infinity	infinity	A3	1	
+@22\5.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\5.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\5.R4	4.6224E-05	-infinity	infinity	A3	1	
+@22\5.R5	1.3673E-08	-infinity	infinity	A3	1	
+@22\5.R6	2.0937E-04	-infinity	infinity	A3	1	
+@22\5.RE_F_C	1.4713E+02	-infinity	infinity	A3	1	
+@22\5.RHO_L	9.1438E+02	-infinity	infinity	A3	1	
+@22\5.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\5.T_E_O	9.3413E+02	2.7315E+02	1.0232E+03	A1	1	
+@22\5.T_P	4.2625E+02	-infinity	infinity	A1	1	
+@22\5.T_V_C	4.2594E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_V_E	4.2594E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WC	4.1692E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WC_I	4.1903E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WC_O	4.1480E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WE	4.2908E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WE_I	4.2861E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\5.T_WE_O	4.2954E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\6.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\6.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\6.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\6.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\6.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\6.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\6.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\6.DELTAP_V	1.8092E-01	-infinity	infinity	A3	1	
+@22\6.DELTAT	5.0387E+02	-infinity	infinity	A3	1	
+@22\6.DELTAT_H	9.4045E-02	-infinity	infinity	A3	1	
+@22\6.F$	'water'	-infinity	infinity	S0	1	
+@22\6.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\6.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\6.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\6.H_LV_C	2.1090E+06	-infinity	infinity	A0	1	
+@22\6.H_LV_E	2.1090E+06	-infinity	infinity	A0	1	
+@22\6.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\6.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\6.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\6.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\6.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\6.P_P	5.0019E+05	-infinity	infinity	A0	1	
+@22\6.P_V_C	4.9605E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\6.P_V_E	4.9605E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\6.Q_DOT	9.5048E+02	-infinity	infinity	A1	1	
+@22\6.Q_DOT_AXIAL	1.9252E-01	0.0000E+00	infinity	A1	1	
+@22\6.Q_DOT_BOIL	1.2975E+05	-infinity	infinity	A1	1	
+@22\6.Q_DOT_ENT	1.3712E+04	-infinity	infinity	A1	1	
+@22\6.Q_DOT_RADIAL	9.5029E+02	0.0000E+00	infinity	A1	1	
+@22\6.Q_DOT_SON	4.7602E+05	-infinity	infinity	A1	1	
+@22\6.Q_DOT_TOT	9.4984E+02	-infinity	infinity	A1	1	
+@22\6.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\6.R_C_I	6.7918E-03	-infinity	infinity	A3	1	
+@22\6.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\6.R_E_I	2.6984E-03	1.0000E-10	infinity	A3	1	
+@22\6.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\6.R_FILM	1.4995E-03	-infinity	infinity	A3	1	
+@22\6.R_POOL	3.4977E-03	-infinity	infinity	A3	1	
+@22\6.R_TOT	5.3048E-01	-infinity	infinity	A3	1	
+@22\6.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\6.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\6.R4	4.7264E-05	-infinity	infinity	A3	1	
+@22\6.R5	1.4423E-08	-infinity	infinity	A3	1	
+@22\6.R6	2.1408E-04	-infinity	infinity	A3	1	
+@22\6.RE_F_C	1.3817E+02	-infinity	infinity	A3	1	
+@22\6.RHO_L	9.1557E+02	-infinity	infinity	A3	1	
+@22\6.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\6.T_E_O	9.0712E+02	2.7315E+02	1.0232E+03	A1	1	
+@22\6.T_P	4.2500E+02	-infinity	infinity	A1	1	
+@22\6.T_V_C	4.2468E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_V_E	4.2468E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WC	4.1622E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WC_I	4.1823E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WC_O	4.1421E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WE	4.2769E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WE_I	4.2725E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\6.T_WE_O	4.2813E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.A_AXIAL	2.0028E-04	-infinity	infinity	A3	1	
+@22\7.A_C_I	1.2284E-02	-infinity	infinity	A3	1	
+@22\7.A_C_O	1.4954E-02	-infinity	infinity	A3	1	
+@22\7.A_E_I	5.5638E-02	-infinity	infinity	A3	1	
+@22\7.A_E_O	6.7733E-02	-infinity	infinity	A3	1	
+@22\7.BETA	1.5708E+00	-infinity	infinity	A3	1	
+@22\7.D_I	2.3000E-02	-infinity	infinity	A3	1	
+@22\7.D_O	2.8000E-02	-infinity	infinity	A3	1	m
+@22\7.DELTAP_V	1.7611E-01	-infinity	infinity	A3	1	
+@22\7.DELTAT	4.7810E+02	-infinity	infinity	A3	1	
+@22\7.DELTAT_H	9.6588E-02	-infinity	infinity	A3	1	
+@22\7.F$	'water'	-infinity	infinity	S0	1	
+@22\7.F_R	6.0000E-01	-infinity	infinity	A3	1	
+@22\7.H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+@22\7.H_E_O	2.9297E+01	0.0000E+00	infinity	A0	1	
+@22\7.H_LV_C	2.1127E+06	-infinity	infinity	A0	1	
+@22\7.H_LV_E	2.1127E+06	-infinity	infinity	A0	1	
+@22\7.K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+@22\7.L_A	5.0000E-02	-infinity	infinity	A3	1	m
+@22\7.L_C	1.7000E-01	-infinity	infinity	A3	1	m
+@22\7.L_E	7.7000E-01	-infinity	infinity	A3	1	m
+@22\7.L_EFF	5.2000E-01	-infinity	infinity	A3	1	
+@22\7.P_P	4.8461E+05	-infinity	infinity	A0	1	
+@22\7.P_V_C	4.8045E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\7.P_V_E	4.8045E+05	2.0000E+05	2.0000E+07	A0	1	
+@22\7.Q_DOT	9.0200E+02	-infinity	infinity	A1	1	
+@22\7.Q_DOT_AXIAL	1.8160E-01	0.0000E+00	infinity	A1	1	
+@22\7.Q_DOT_BOIL	1.2825E+05	-infinity	infinity	A1	1	
+@22\7.Q_DOT_ENT	1.3593E+04	-infinity	infinity	A1	1	
+@22\7.Q_DOT_RADIAL	9.0182E+02	0.0000E+00	infinity	A1	1	
+@22\7.Q_DOT_SON	4.6231E+05	-infinity	infinity	A1	1	
+@22\7.Q_DOT_TOT	9.0137E+02	-infinity	infinity	A1	1	
+@22\7.R_AXIAL	5.9576E+01	-infinity	infinity	A3	1	
+@22\7.R_C_I	6.6820E-03	-infinity	infinity	A3	1	
+@22\7.R_C_O	1.1639E-02	-infinity	infinity	A3	1	
+@22\7.R_E_I	2.7353E-03	1.0000E-10	infinity	A3	1	
+@22\7.R_E_O	5.0394E-01	-infinity	infinity	A3	1	
+@22\7.R_FILM	1.4752E-03	-infinity	infinity	A3	1	
+@22\7.R_POOL	3.5754E-03	-infinity	infinity	A3	1	
+@22\7.R_TOT	5.3042E-01	-infinity	infinity	A3	1	
+@22\7.R_WC	4.2257E-03	-infinity	infinity	A3	1	
+@22\7.R_WE	9.3294E-04	-infinity	infinity	A3	1	
+@22\7.R4	4.8284E-05	-infinity	infinity	A3	1	
+@22\7.R5	1.5177E-08	-infinity	infinity	A3	1	
+@22\7.R6	2.1870E-04	-infinity	infinity	A3	1	
+@22\7.RE_F_C	1.2977E+02	-infinity	infinity	A3	1	
+@22\7.RHO_L	9.1669E+02	-infinity	infinity	A3	1	
+@22\7.T_C_O	4.0315E+02	3.7300E+02	infinity	A1	1	
+@22\7.T_E_O	8.8134E+02	2.7315E+02	1.0232E+03	A1	1	
+@22\7.T_P	4.2381E+02	-infinity	infinity	A1	1	
+@22\7.T_V_C	4.2348E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_V_E	4.2348E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WC	4.1555E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WC_I	4.1746E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WC_O	4.1365E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WE	4.2637E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WE_I	4.2595E+02	2.7500E+02	6.4500E+02	A1	1	
+@22\7.T_WE_O	4.2679E+02	2.7500E+02	6.4500E+02	A1	1	
+A_F	4.4660E-01	-infinity	infinity	A3	1	
+A_HEX	3.6576E+00	-infinity	infinity	A3	1	m^2
+A_HEX_C	6.2807E-01	-infinity	infinity	A3	1	m^2
+A_INSUL	3.1054E-01	-infinity	infinity	A3	1	
+ALPHA_F	0.0000E+00	-infinity	infinity	A3	1	
+ALPHA_IN	4.5805E-01	-infinity	infinity	A3	1	
+ALPHA_OUT	4.7012E-01	-infinity	infinity	A3	1	
+BETA	1.5708E+00	-infinity	infinity	A3	1	
+CP_F[1]	1.1453E+03	-infinity	infinity	A3	1	J/kg-K
+CP_F[2]	1.1395E+03	-infinity	infinity	A3	1	J/kg-K
+CP_F[3]	1.1337E+03	-infinity	infinity	A3	1	J/kg-K
+CP_F[4]	1.1280E+03	-infinity	infinity	A3	1	J/kg-K
+CP_F[5]	1.1224E+03	-infinity	infinity	A3	1	J/kg-K
+CP_F[6]	1.1169E+03	-infinity	infinity	A3	1	J/kg-K
+D_F	4.2000E-02	-infinity	infinity	A3	1	
+D_HEX_C	5.0800E-01	-infinity	infinity	A3	1	m
+D_I	2.3000E-02	-infinity	infinity	A3	1	
+D_IN_1	1.6830E-01	-infinity	infinity	A3	1	m
+D_O	2.8000E-02	-infinity	infinity	A3	1	m
+D_OUT_1	1.5900E-01	-infinity	infinity	A3	1	m
+DELTAP_F	8.9693E-01	-infinity	infinity	A3	14	Pa
+DELTAP_S_IN	5.9262E+01	-infinity	infinity	A3	1	Pa
+DELTAP_S_OUT	1.1040E+00	-infinity	infinity	A3	1	Pa
+DH_F_O_70	1.1651E+05	-infinity	infinity	A3	1	
+EPSILON_F	0.0000E+00	-infinity	infinity	A3	1	
+EXGAS$	'AIR'	-infinity	infinity	S0	1	
+F$	'water'	-infinity	infinity	S0	1	
+F_R	6.0000E-01	-infinity	infinity	A3	1	
+H_C_O	5.7456E+03	0.0000E+00	infinity	A0	1	W/m^2-K
+H_F	7.0000E-03	-infinity	infinity	A0	1	m
+H_F_C	2.9297E+01	0.0000E+00	infinity	A0	14	W/m^2-K
+H_IN_F	1.1990E+06	-infinity	infinity	A0	1	
+H_IN_WF	2.4022E+05	-infinity	infinity	A0	1	
+H_OUT_F	1.0111E+06	-infinity	infinity	A0	1	
+H_OUT_F_70	8.9463E+05	-infinity	infinity	A0	1	
+H_OUT_WF	4.8841E+05	-infinity	infinity	A0	1	
+H_V_250_W	2.8009E+06	-infinity	infinity	A0	1	
+K_INSUL	1.8738E+01	-infinity	infinity	A3	1	W/m-K
+K_PIPE	4.3582E+01	-infinity	infinity	A3	1	
+L_A	5.0000E-02	-infinity	infinity	A3	1	m
+L_C	1.7000E-01	-infinity	infinity	A3	1	m
+L_E	7.7000E-01	-infinity	infinity	A3	1	m
+L_M	1.2746E-01	-infinity	infinity	A3	1	
+L_T	9.9000E-01	-infinity	infinity	A3	1	m
+L_TB	3.3600E-01	-infinity	infinity	A3	1	m
+M_DOT_F	2.3000E-01	-infinity	infinity	A3	1	kg/s
+M_DOT_WF	1.7450E-01	-infinity	infinity	A3	1	kg/s
+M_W_THERMOSYPHON	1.9137E-01	-infinity	infinity	A3	1	kg
+M_W_TOT	8.0377E+00	-infinity	infinity	A3	1	
+N_F	9.0000E+00	-infinity	infinity	A3	1	
+N_T	4.2000E+01	-infinity	infinity	A3	1	
+N_TPC	7.0000E+00	-infinity	infinity	A3	1	
+N_TPC_INI	7.0000E+00	-infinity	infinity	A3	1	
+NUSSELT_F	1.2773E+01	-infinity	infinity	A3	1	
+ORCF$	'R245fa'	-infinity	infinity	S0	1	
+P_ATM	1.0133E+05	-infinity	infinity	A0	1	Pa
+P_CRIT	3.6510E+06	-infinity	infinity	A0	1	Pa
+P_EV_WF	2.3495E+06	-infinity	infinity	A0	1	Pa
+P_IN_F	1.0133E+05	-infinity	infinity	A0	1	Pa
+P_OUT_F	1.0132E+05	-infinity	infinity	A0	1	Pa
+P_SAT_25_W	3.1699E+03	-infinity	infinity	A0	1	
+P_V_E[1]	5.7248E+05	-infinity	infinity	A0	1	Pa
+P_V_E[2]	5.5099E+05	-infinity	infinity	A0	1	Pa
+P_V_E[3]	5.3119E+05	-infinity	infinity	A0	1	Pa
+P_V_E[4]	5.1292E+05	-infinity	infinity	A0	1	Pa
+P_V_E[5]	4.9605E+05	-infinity	infinity	A0	1	Pa
+P_V_E[6]	4.8045E+05	-infinity	infinity	A0	1	Pa
+PIPEMAT$	'carbon_steel'	-infinity	infinity	S0	1	
+Q_DOT[1]	1.1686E+03	-infinity	infinity	A1	1	W
+Q_DOT[2]	1.1103E+03	-infinity	infinity	A1	1	W
+Q_DOT[3]	1.0545E+03	-infinity	infinity	A1	1	W
+Q_DOT[4]	1.0013E+03	-infinity	infinity	A1	1	W
+Q_DOT[5]	9.5048E+02	-infinity	infinity	A1	1	W
+Q_DOT[6]	9.0200E+02	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[1]	2.4288E-01	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[2]	2.2922E-01	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[3]	2.1630E-01	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[4]	2.0408E-01	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[5]	1.9252E-01	-infinity	infinity	A1	1	W
+Q_DOT_AXIAL[6]	1.8160E-01	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[1]	1.3662E+05	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[2]	1.3476E+05	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[3]	1.3300E+05	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[4]	1.3133E+05	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[5]	1.2975E+05	-infinity	infinity	A1	1	W
+Q_DOT_BOIL[6]	1.2825E+05	-infinity	infinity	A1	1	W
+Q_DOT_ENT[1]	1.4245E+04	-infinity	infinity	A1	1	W
+Q_DOT_ENT[2]	1.4102E+04	-infinity	infinity	A1	1	W
+Q_DOT_ENT[3]	1.3966E+04	-infinity	infinity	A1	1	W
+Q_DOT_ENT[4]	1.3836E+04	-infinity	infinity	A1	1	W
+Q_DOT_ENT[5]	1.3712E+04	-infinity	infinity	A1	1	W
+Q_DOT_ENT[6]	1.3593E+04	-infinity	infinity	A1	1	W
+Q_DOT_HEX	4.3310E+04	-infinity	infinity	A1	1	W
+Q_DOT_SON[1]	5.4263E+05	-infinity	infinity	A1	1	W
+Q_DOT_SON[2]	5.2401E+05	-infinity	infinity	A1	1	W
+Q_DOT_SON[3]	5.0677E+05	-infinity	infinity	A1	1	W
+Q_DOT_SON[4]	4.9081E+05	-infinity	infinity	A1	1	W
+Q_DOT_SON[5]	4.7602E+05	-infinity	infinity	A1	1	W
+Q_DOT_SON[6]	4.6231E+05	-infinity	infinity	A1	1	W
+Q_FLUX_C	6.8958E+04	0.0000E+00	infinity	A1	1	W/m^2
+R_AXIAL[1]	5.9576E+01	-infinity	infinity	A3	1	
+R_AXIAL[2]	5.9576E+01	-infinity	infinity	A3	1	
+R_AXIAL[3]	5.9576E+01	-infinity	infinity	A3	1	
+R_AXIAL[4]	5.9576E+01	-infinity	infinity	A3	1	
+R_AXIAL[5]	5.9576E+01	-infinity	infinity	A3	1	
+R_AXIAL[6]	5.9576E+01	-infinity	infinity	A3	1	
+RE_F	6.4165E+02	-infinity	infinity	A3	1	-
+RHO_25_W	9.9700E+02	-infinity	infinity	A3	1	
+RHO_F[1]	3.4489E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_F[2]	3.5569E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_F[3]	3.6665E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_F[4]	3.7775E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_F[5]	3.8900E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_F[6]	4.0038E-01	-infinity	infinity	A3	1	kg/m^3
+RHO_IN_F	3.4489E-01	-infinity	infinity	A3	1	kg/m^3
+S_C_OUT	1.7908E-02	-infinity	infinity	A3	1	
+S_IN_1	2.2246E-02	-infinity	infinity	A3	1	m^2
+S_IN_2	3.1766E-01	-infinity	infinity	A3	1	
+S_L	5.6000E-02	-infinity	infinity	A3	1	m
+S_OUT_1	1.9856E-02	-infinity	infinity	A3	1	
+S_T	7.0000E-02	-infinity	infinity	A3	1	m
+SL\D	2.0000E+00	-infinity	infinity	A3	1	-
+ST\D	2.5000E+00	-infinity	infinity	A3	1	-
+ST\SL	1.2500E+00	-infinity	infinity	A3	1	-
+T_BAR_WC_O	4.1515E+02	-infinity	infinity	A1	1	K
+T_BAR_WE_O	4.3039E+02	-infinity	infinity	A1	1	K
+T_CRIT	4.2701E+02	-infinity	infinity	A1	1	K
+T_EV_WF	4.0315E+02	3.7300E+02	infinity	A1	1	K
+T_F	4.0000E-04	-infinity	infinity	A1	1	m
+T_F[1]	1.0232E+03	2.7315E+02	1.0232E+03	A1	1	K
+T_F[2]	9.9210E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_F[3]	9.6244E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_F[4]	9.3413E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_F[5]	9.0712E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_F[6]	8.8134E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_F[7]	8.5677E+02	2.7315E+02	1.0232E+03	A1	1	K
+T_IN_F	1.0232E+03	-infinity	infinity	A1	1	K
+T_IN_WF	3.0315E+02	-infinity	infinity	A1	1	K
+T_INSUL	2.5000E-02	-infinity	infinity	A1	1	m
+T_INSUL_C	4.7470E+02	-infinity	infinity	A1	1	K
+T_OUT_F	8.5677E+02	-infinity	infinity	A1	1	K
+T_OUT_F_70	7.5080E+02	-infinity	infinity	A1	1	K
+T_OUT_F_C	5.8362E+02	-infinity	infinity	A1	1	
+T_PIPE	2.5000E-03	-infinity	infinity	A1	1	m
+T_V_C[1]	4.3015E+02	2.7315E+02	infinity	A1	1	K
+T_V_C[2]	4.2868E+02	2.7315E+02	infinity	A1	1	K
+T_V_C[3]	4.2727E+02	2.7315E+02	infinity	A1	1	K
+T_V_C[4]	4.2594E+02	2.7315E+02	infinity	A1	1	K
+T_V_C[5]	4.2468E+02	2.7315E+02	infinity	A1	1	K
+T_V_C[6]	4.2348E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[1]	4.3015E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[2]	4.2868E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[3]	4.2727E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[4]	4.2594E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[5]	4.2468E+02	2.7315E+02	infinity	A1	1	K
+T_V_E[6]	4.2348E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[1]	4.2169E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[2]	4.2076E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[3]	4.1988E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[4]	4.1903E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[5]	4.1823E+02	2.7315E+02	infinity	A1	1	K
+T_WC_I[6]	4.1746E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[1]	4.1675E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[2]	4.1607E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[3]	4.1542E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[4]	4.1480E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[5]	4.1421E+02	2.7315E+02	infinity	A1	1	K
+T_WC_O[6]	4.1365E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[1]	4.3314E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[2]	4.3156E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[3]	4.3005E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[4]	4.2861E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[5]	4.2725E+02	2.7315E+02	infinity	A1	1	K
+T_WE_I[6]	4.2595E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[1]	4.3423E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[2]	4.3259E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[3]	4.3103E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[4]	4.2954E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[5]	4.2813E+02	2.7315E+02	infinity	A1	1	K
+T_WE_O[6]	4.2679E+02	2.7315E+02	infinity	A1	1	K
+TUBEBANK$	'Inline'	-infinity	infinity	S0	1	
+U_F[1]	1.4932E+00	-infinity	infinity	A3	1	m/s
+U_F[2]	1.4479E+00	-infinity	infinity	A3	1	m/s
+U_F[3]	1.4046E+00	-infinity	infinity	A3	1	m/s
+U_F[4]	1.3633E+00	-infinity	infinity	A3	1	m/s
+U_F[5]	1.3239E+00	-infinity	infinity	A3	1	m/s
+U_F[6]	1.2863E+00	-infinity	infinity	A3	1	m/s
+V_DOT_IN_F	6.6687E-01	-infinity	infinity	A3	1	m^3/s
+V_DOT_OUT_F	5.7446E-01	-infinity	infinity	A3	1	
+V_E_THERMOSYPHON	3.1992E-04	-infinity	infinity	A3	1	
+V_HEX_C_LIQ_MIN	5.5049E-02	-infinity	infinity	A3	1	m^3
+V_IN	2.9977E+01	-infinity	infinity	A3	1	m/s
+V_L_MIN	2.2770E-05	-infinity	infinity	A3	1	
+V_OUT	3.2079E+01	-infinity	infinity	A3	1	m/s
+VARFILENAME$	'C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\StaticModels\ORCAL_Prototype_20160510_beta.var'	-infinity	infinity	S0	1	
+W_HEX	5.8000E-01	-infinity	infinity	A1	1	m
+W_TB	4.9000E-01	-infinity	infinity	A1	1	m
+XI_IN	3.8243E-01	-infinity	infinity	A3	1	
+XI_OUT	5.3590E-03	-infinity	infinity	A3	1	

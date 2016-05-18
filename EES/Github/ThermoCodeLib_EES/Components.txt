@@ -1,0 +1,586 @@
+$unitsystem SI K Pa J mass rad
+$tabstops 0.2 0.4 0.6 0.8 1.0
+$allow '//'
+$include C:\Users\Louis Le\Dropbox\workspace\ORCAL\ORCAL_Models\ORCAL_Functions.LIB
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark Pump: Constant efficiency model
+Procedure pump1(F$,p_in,p_out,h_in,m_dot,eta: h_out, W_dot)
+ 
+T_in 		= propssi('T','P',p_in,'H',h_in,F$) "inlet temperature"
+rho_in		= propssi('D','P',p_in,'H',h_in,F$) "inlet density"
+mu_in		= propssi('V','P',p_in,'H',h_in,F$) "inlet dynamic viscosity"
+p_sat		= propssi('P','T',T_in,'Q',0,F$) "saturation pressure at inlet temperature"
+ 
+NPSH_A 	= ((P_in-P_sat)/(g#*rho_in))*convert(m,ft) "Net Positive Suction Head in foot"
+If (NPSH_A<5) Then Call warning('Available net positive suction head should be greater than 5 ft to avoid the cavitation')
+If (h_in = propssi('H','P',p_in,'Q',0,F$)) Then Call warning('Pump inlet enthalpy should be lower than the saturation enthalpy of working fluid to advoid the cavitation')
+ 
+nu_in		= (mu_in/rho_in)*convert(m^2/s,centiStoke) "kinetic viscosity"
+Call warning('The kinetic viscosity of liquid in cSt is XXXF1',nu_in)
+V_dot_in	= m_dot/rho_in*convert(m^3/s,m^3/h) "volume flow rate"
+Call warning('The volume flow rate of liquid in m^3/h is XXXF1',V_dot_in)
+H_pp		= (p_out-p_in)/(g#*rho_in)*convert(m,ft) "pump head in meter"
+Call warning('Total pump head in foot is XXXF1',H_pp)
+ 
+s_in 		= propssi('S','P',p_in,'H',h_in,F$)
+h_s 		= propssi('H','P',p_out,'S',s_in,F$)
+h_out 		= h_in + (h_s - h_in)/eta
+W_dot		= m_dot*(h_out-h_in)
+ 
+End
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark Turbine: Constant efficiency model
+Procedure turbine1(F$, p_in, p_out, h_in, m_dot, eta: h_out, W_dot, eta_s)
+ 
+If (p_out < 1e5) Then Call warning('Turbine outlet pressure should be greater than atmospheric pressure')
+s_in 			= propssi('S','P',p_in,'H',h_in,F$)"inlet entropy"
+If (s_in < propssi('S','P',p_out,'Q',1,F$)) Then Call warning('This fluid is a wet fluid. A surperheating step is necessary to avoid the droplet formation during expansion step')
+h_s 			= propssi('H','P',p_out,'S',s_in,F$) "isentropic exit enthalpy"
+ 
+If (eta>0) Then
+	"isentropic efficiency is specified"
+	eta_s 	= eta
+	h_out	= h_in - eta_s*(h_in - h_s) "actual outlet enthalpy"
+	W_dot 	= m_dot*(h_in - h_out) "Power"
+Else
+	"polytropic efficiency is set"
+	eta_p 	= abs(eta) "polytropic efficiency"
+	N 		= 50 [-] "number of stages used to simulate polytropic process"
+	Dp 		= (p_in -p_out)/N "pressure drop across each stage"
+	i 		= 0 "counter for loop"
+	p_i 		= p_in "inlet pressure of 1st stage"
+	s_i 		= s_in "inlet entropy of 1st stage"
+	h_i 		= h_in "inlet enthalpy of 1st stage"
+ 
+	Repeat 
+		i 		= i+1 "increment counter"
+		p_o 	= p_i-DP "outlet pressure of stage"
+		h_o_s 	= propssi('H','P',p_o,'S',s_i,F$)
+		h_o 	= h_i-eta_p*(h_i - h_o_s) 
+		h_i 	= h_o "inlet enthalpy"
+		p_i 	= p_o
+		s_i 	= propssi('S','P',p_i,'H',h_i,F$)	
+	Until (i = N)
+	h_out 	= h_o
+	W_dot 	= m_dot*(h_in - h_out)
+	eta_s 	= (h_in - h_out)/(h_in - h_s)
+Endif
+End
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark Heat exchanger: Single-phase heat exchanger generic model
+Procedure hex(F_H$, C_H, m_dot_h, h_H_in, P_H_in, F_C$, C_C, m_dot_c, h_C_in, P_C_in, DT, DPoverP_H, DPoverP_C: h_H_out, P_H_out, h_C_out, P_C_out, Q_dot, eff)
+ 
+"$HEX
+ Heat exchanger model in which two fluids interact with one another. The approach temperature defference is specified.
+In this model, the pinchpoint must occur at either the hot or cold end; this model will not work if there is a chance that the pinchpoint occur within the heat exchanger. 
+ 
+Inputs:
+F_H$			:  Hot fluid string identifier
+C_H			: concentration of hot fluid - only necessary when hot fluid is brine, otherwise set C_H =0
+m_dot_h	: mass flow rate of hot fluid (kg/s)
+h_H_in			: inlet specific enthalpy of hot fluid (J/kg)
+P_H_in			: inlet pressure of hot fluid (Pa)
+F_C$			: cold fluid string identifier
+C_C			: concentration of cold fluid - only necessary when cold fluid is brine, otherwise set C_C=0
+m_dot_c	: mass flow rate of cold fluid (kg/s)
+h_C_in			: inlet specific enthalpy of cold fluid (J/kg)
+P_C_in			: inlet pressure of cold fluid (Pa)
+DT				: approach temperature difference (K)
+DPoverP_H	: pressure drop normalized by absolute pressure on hot side (-)
+DPoverP_C	: pressure drop normalized by absolute pressure on cold side (-)
+ 
+Outputs:
+h_H_out		: outlet specific enthalpy of hot fluid (J/kg, kJ/kg, or Btu/lbm)
+P_H_out		: outlet pressure of hot fluid (bar, atm, Pa, kPa, MPa)
+h_C_out		: outlet specific enthalpy of cold fluid (J/kg, kJ/kg, or Btu/lbm)
+P_C_out		: outlet pressure of cold fluid (bar, atm, Pa, kPa, MPa)
+Q_dot			: heat transfer rate from hot to cold (W, kW or Btu/hr)
+eff				: effectiveness (-)"
+ 
+T_H_in 		= propssi('T','P',p_H_in,'H',h_H_in,F_H$)
+T_C_in 		= propssi('T','P',p_C_in,'H',h_C_in,F_C$)
+If ((T_H_in<T_C_in) or (T_H_in=T_C_in)) Then Call warning('Hot side inlet temperature must be greater than cold side inlet temperature. The temperature difference between hot side inlet and cold side inlet is XXXF1',T_H_in - T_C_in)
+If ((T_H_in-T_C_in<DT) or (T_H_in-T_C_in=DT)) Then Call warning('The temperature difference between hot side inlet and cold side inlet must be greater than DT. The value of this former is XXXF1',T_H_in - T_C_in)
+p_H_out 		= p_H_in*(1-DPoverP_H)
+p_C_out 		= p_C_in*(1-DPoverP_C)
+ 
+"start by assuming pinch point at hot end"
+T_C_out 		= T_H_in - DT
+h_C_out 		= propssi('H','T',T_C_out,'P',P_C_out,F_C$)
+h_C_out_max 	= propssi('H','P',p_C_out,'T',T_H_in,F_C$)
+ 
+Q_dot 			= m_dot_c*(h_C_out - h_C_in) "heat transfer rate"
+Q_dot_max 	= m_dot_c*(h_C_out_max - h_C_in)
+h_H_out 		= h_H_in - Q_dot/m_dot_h
+T_H_out 		= propssi('T','P',p_H_out,'H',h_H_out,F_H$)
+eff 				= Q_dot/Q_dot_max "effectiveness"
+ 
+If ((T_H_out - T_C_in)<DT) Then "Pinchpoint must be at the cold end"
+	T_H_out 		= T_C_in + DT "outlet temperature on hot side"
+	h_H_out 		= propssi('H','T',T_H_out,'P',p_H_out,F_H$)
+	h_H_out_min 	= propssi('H','P',p_H_out,'T',T_C_in,F_H$)
+	Q_dot 			= m_dot_h*(h_H_in-h_H_out) "heat transfer rate"
+	Q_dot_max 	= m_dot_h*(h_H_in - h_H_out_min)
+	eff 				= Q_dot/Q_dot_max
+	h_C_out 		= h_C_in+Q_dot/m_dot_c
+	T_C_out 		= propssi('T','P',P_C_out,'H',h_C_out,F_C$)
+Endif
+ 
+End
+"~~~~~~~~~~~~~~~~~~~~"
+$bookmark Heat exchanger: Single-phase heat exchanger sizing model
+Procedure hex_1(V_tube,N_tp,N_sp,OD,ID,L_tube,epsilon_tube,Pitch_r, X_B,Tube_Mat$,R_ft,CF$,m_dot_c,P_c, T_c_in,T_c_out,HF$,m_dot_h,P_h,T_h_in,T_h_out:N_t,D_shell,h_tube,h_shell,DELTAp_tube,DELTAp_shell,U_c,LMTD,Q_dot_h,A_hex,L_hex,over_design)
+ 
+"N_tp				: tube pass number
+N_sp				: shell pass number
+OD/ID				: outer/inner diamter
+Pitch_r				: pitch ratio
+X_B				: baffle spacing
+CF$				: cold fluid string
+m_dot_c			: mass flow rate of cold fluid
+P_c				: inlet pressure of cold fluid
+T_c_in, T_c_out	: inlet, outlet temperature of cold fluid
+HF$				: hot fluid string
+m_dot_h			: mass flow rate of hot fluid
+P_h				: inlet pressure of hot fluid
+T_h_in, T_h_out	: inlet, outlet temperature of hot fluid"
+ 
+Pitch		= Pitch_r*OD "pitch tube"
+A_i_tube	= pi#*ID^2/4 "cross-sectional area of tube"
+ 
+Call tube_const('square',N_tp:CL,CTP)
+"! cold fluid (liquid) flows inside the tube"
+rho_bar_c 	= propssi('D','T',(T_c_in+T_c_out)/2,'p',P_c,CF$)
+N_t			= ceil(m_dot_c*N_tp/(rho_bar_c*V_tube*A_i_tube))+epsilon_tube
+G_c		= m_dot_c*N_tp/N_t/A_i_tube
+ 
+D_shell 	= sqrt((N_t*CL*Pitch^2)/(0.785*CTP))
+ 
+T_wall_bar = ((T_c_in+T_c_out)/2+(T_h_in+T_h_out)/2)/2
+k_wall 		= k_(Tube_Mat$,T = T_wall_bar)
+ 
+Call heattransfer_sp_circulartube(CF$,(T_c_in+T_c_out)/2,P_c,G_c,ID,L_tube,N_tp:h_tube,DELTAp_tube)
+ 
+Call heattransfer_shell_sp_kern(HF$,T_h_in, T_h_out, P_h, m_dot_h,D_shell,'square',Pitch,OD,T_wall_bar,X_B,L_tube,N_sp:h_shell,DELTAp_shell)
+ 
+U_c 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall)^(-1)
+U_f 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall+R_ft)^(-1)
+over_design	= U_c/U_f
+Call rlmtd(T_h_in,T_h_out,T_c_in,T_c_out:LMTD)
+ 
+cp_h   		= propssi('C','T',(T_h_in+T_h_out)/2,'P',P_h,HF$)
+Q_dot_h 	= m_dot_h*cp_h*(T_h_in-T_h_out)
+ 
+Call lmtd_factor(T_h_in,T_h_out,T_c_in,T_c_out,N_sp:R,P,F_LMTD)
+Call warning('The value of F_LMTD is XXXA1', F_LMTD)
+ 
+A_hex  	= Q_dot_h/U_c/LMTD/F_LMTD
+L_hex		= A_hex/(pi#*OD*N_t)/N_tp
+ 
+End
+"~~~~~~~~~~~~~~~~~~~~"
+Procedure hex_2(V_tube,N_tp,N_sp,OD,ID,L_tube,epsilon_tube,Pitch_r, X_B,Tube_Mat$,R_ft,CF$,m_dot_c,P_c, T_c_in,T_c_out,HF$,m_dot_h,P_h,T_h_in,T_h_out:N_t,D_shell,h_tube,h_shell,DELTAp_tube,DELTAp_shell,U_c,LMTD,Q_dot_h,A_hex,L_hex,over_design)
+ 
+"N_tp				: tube pass number
+N_sp				: shell pass number
+OD/ID				: outer/inner diamter
+Pitch_r				: pitch ratio
+X_B				: baffle spacing
+CF$				: cold fluid string
+m_dot_c			: mass flow rate of cold fluid
+P_c				: inlet pressure of cold fluid
+T_c_in, T_c_out	: inlet, outlet temperature of cold fluid
+HF$				: hot fluid string
+m_dot_h			: mass flow rate of hot fluid
+P_h				: inlet pressure of hot fluid
+T_h_in, T_h_out	: inlet, outlet temperature of hot fluid"
+ 
+Pitch		= Pitch_r*OD "pitch tube"
+A_i_tube	= pi#*ID^2/4 "cross-sectional area of tube"
+ 
+Call tube_const('square',N_tp:CL,CTP)
+"! cold fluid (liquid) flows inside the tube"
+rho_bar_c 	= propssi('D','T',(T_c_in+T_c_out)/2,'p',P_c,CF$)
+N_t			= ceil(m_dot_c*N_tp/(rho_bar_c*V_tube*A_i_tube))+epsilon_tube "to become input"
+G_c		= m_dot_c*N_tp/N_t/A_i_tube
+ 
+D_shell 	= sqrt((N_t*CL*Pitch^2)/(0.785*CTP)) "to become input"
+ 
+T_wall_bar = ((T_c_in+T_c_out)/2+(T_h_in+T_h_out)/2)/2
+k_wall 		= k_(Tube_Mat$,T = T_wall_bar)
+ 
+Call heattransfer_sp_circulartube(CF$,(T_c_in+T_c_out)/2,P_c,G_c,ID,L_tube,N_tp:h_tube,DELTAp_tube)
+ 
+Call heattransfer_shell_sp_kern(HF$,T_h_in, T_h_out, P_h, m_dot_h,D_shell,'square',Pitch,OD,T_wall_bar,X_B,L_tube,N_sp:h_shell,DELTAp_shell)
+ 
+U_c 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall)^(-1)
+U_f 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall+R_ft)^(-1)
+over_design	= U_c/U_f
+Call rlmtd(T_h_in,T_h_out,T_c_in,T_c_out:LMTD)
+ 
+cp_h   		= propssi('C','T',(T_h_in+T_h_out)/2,'P',P_h,HF$)
+Q_dot_h 	= m_dot_h*cp_h*(T_h_in-T_h_out)
+ 
+Call lmtd_factor(T_h_in,T_h_out,T_c_in,T_c_out,N_sp:R,P,F_LMTD)
+Call warning('The value of F_LMTD is XXXA1', F_LMTD)
+ 
+A_hex  	= Q_dot_h/U_c/LMTD/F_LMTD
+L_hex		= A_hex/(pi#*OD*N_t)/N_tp
+ 
+End
+ 
+"~~~~~~~~~~~~~~~~~~~~"
+Subprogram thermosyphon_pipe(F$,F_r,beta,D_i,D_o,L_e,L_c,L_a,T_e_o,T_c_o,h_e_o,h_c_o,k_pipe:Q_dot,Q_dot_ent,Q_dot_boil,Q_dot_son, T_we_o,T_v_e,T_we_i, T_wc_i,T_wc_o,T_v_c,Q_dot_axial,R_axial,P_v_e)
+ 
+$updateguesses
+"! Step 1: Design paramerter specification"
+L_eff					= L_a+(L_e+L_c)/2 "thermosyphon effective length"
+A_e_o					= pi#*L_e*D_o "evaporator external area"
+A_e_i					= pi#*L_e*D_i "evaporator internal area"
+A_c_o					= pi#*L_c*D_o "condenser external area"
+A_c_i					= pi#*L_c*D_i "condenser internal area"
+A_axial 				= pi#/4*(D_o^2-D_i^2) "tube annuli cross section area" 
+ 
+"!Step 1: Determine thermal resistances"
+R_e_o					= 1/(A_e_o*h_e_o)  "evaporator external thermal resistance"
+R_we					= ln(D_o/D_i)/(2*pi#*L_e*k_pipe) "evaporator wall thermal resistance"
+R_wc					= ln(D_o/D_i)/(2*pi#*L_c*k_pipe) "condenser wall thermal resistance"
+R_c_o					= 1/(A_c_o*h_c_o) "condenser external thermal resistance"
+R_axial 				= L_eff/(k_pipe*A_axial) "! tube axial thermal resistance"
+ 
+Call thermalresistance_boiling_esdu(F$,Q_dot_radial,D_i,L_e,T_v_e,F_r:R_film,R_pool,R_e_i) "evaporator internal thermal resistance"
+Call thermalresistance_cond_esdu(F$,Q_dot_radial,T_v_c,D_i,L_c:R_c_i, Re_f_c) "condenser internal thermal resistance" 
+ 
+"Pressure drop: Ref. VDI 2010" 
+P_v_e				= propssi('P','T',T_v_e,'Q',1,F$)
+DELTAP_v 		= deltap_v(F$,T_v_e,Q_dot_radial,D_i,L_eff) "Assuming that vapour diameter is tube internal diameter"
+P_v_c				= P_v_e-DELTAP_v
+ 
+"~~~~~~~~~~~~~~~~~~~~~~"
+"! Energy balance in evaporator and condenser sections; system of equation; variables: Q_dot_rad, Q_dot_axial, T_we_o,T_we_i,T_v_e,T_v_c,T_wc_i,T_wc_o"
+$VarInfo Q_dot_radial Guess=1e4
+$VarInfo Q_dot_axial Guess=10
+$VarInfo T_we_o Guess=473 Lower=275  Upper=645  
+$VarInfo T_we_i Guess=463 Lower=275  Upper=645  
+$VarInfo T_v_e Guess=453 Lower=275  Upper=645  
+$VarInfo T_v_c Guess=453 Lower=275  Upper=645  
+$VarInfo T_wc_i Guess=443 Lower=275  Upper=645  
+$VarInfo T_wc_o Guess=433 Lower=275  Upper=645
+$VarInfo P_v_e Guess=20e5 Lower=2e5  Upper=20e6  
+$VarInfo P_v_c Guess=453 Lower=2e5  Upper=20e6
+Q_dot_radial+Q_dot_axial	= (T_e_o-T_we_o)/R_e_o "equation 1"
+Q_dot_radial 				= (T_we_o-T_we_i)/R_we "equation 2"
+Q_dot_radial 				= (T_we_i-T_v_e)/R_e_i "equation 3"
+ 
+T_v_c						= propssi('T','P',P_v_c,'Q',1,F$) "equation 4"
+ 
+Q_dot_radial   				= (T_v_c-T_wc_i)/R_c_i "equation 5"
+Q_dot_radial    			= (T_wc_i-T_wc_o)/R_wc "equation 6"
+Q_dot_radial+Q_dot_axial	= (T_wc_o-T_c_o)/R_c_o "equation 7"
+ 
+Q_dot_axial				= (T_we-T_wc)/R_axial "equation 8" 
+T_we						= (T_we_i+T_we_o)/2 
+T_wc 						= (T_wc_i+T_wc_o)/2
+"~~~~~~~~~~~~~~~~~~~~~~" 
+"! Verification step"
+{"Heat of vaporization"
+h_lv_e					= propssi('H','P',P_v_e,'Q',1,F$)-propssi('H','P',P_v_e,'Q',0,F$)
+h_lv_c					= propssi('H','P',P_v_c,'Q',1,F$)-propssi('H','P',P_v_c,'Q',0,F$)
+"Additional thermal resistance"
+R4						= (R#*T_v_e^2*(2*pi#*R#*T_v_e)^0.5)/(h_lv_e^2*P_v_e*A_e_o)
+R5						= (T_v_e-T_v_c)/Q_dot_radial
+R6						= (R#*T_v_c^2*(2*pi#*R#*T_v_c)^0.5)/(h_lv_c^2*P_v_c*A_c_o)
+"Thermosyphon overal thermal resistance"
+R_tot					= R_e_o+1/(1/(R_we+R_e_i+R4+R5+R6+R_c_i+R_wc)+1/R_axial)+R_c_o
+"! Determine the pressure in the pool basis using the equation 11.41 inf Ref. and obtain the saturated temperature for p_P"
+"The liquid pressure in the pool base is larger than the vapour pressure, due to the column of liquid in the pool. The boiling phenomena almost do not influence the pressure in the evaporator basis "
+rho_l					= propssi('D','P',P_v_e,'Q',0,F$)
+p_P					= P_v_e+rho_l*g#*L_e*F_r*sin(beta) "liquid pressure in the pool base, where beta is the thermosyphon inclination angle with the horizontal position"
+T_P					= propssi('T','P',p_P,'Q',0,F$) "liquid temperature in the pool base" 
+"! Determine DELTAT_h using equation 11.43 in Ref."
+"For most of the operation conditions, DELTAT_h is very small and can be neglected. On the other hand, this difference may be important for fluid operating in low temperature levels and, therefore, low vapour pressures"
+DELTAT_h				= (T_P-T_v_e)*F_r/2
+"! Determine the global temperature difference"
+DELTAT 				= T_e_o-T_c_o-DELTAT_h
+"Total heat transfer rate" 
+Q_dot_tot				= DELTAT/R_tot}
+"~~~~~~~~~~~~~~~~~~~~~~" 
+ 
+"! Limites de fonctionnement"
+Call tctp_operatinglimits(F$,D_i,L_e,T_v_e,Q_dot_radial:Q_dot_ent,Q_dot_boil,Q_dot_son) "assuming that vapour diameter is tube internal diameter d_v = D_i"
+ 
+Q_dot				= Q_dot_radial+Q_dot_axial 
+ 
+End
+"~~~~~~~~~~~~~~~~~~~~"
+ 
+$bookmark Heat exchanger: Evaporator generic model
+Procedure evaporator1_gen(F_H$,p_H_in,h_H_in,m_dot_h,F_C$,p_C_in,h_C_in,m_dot_c:p_H_out,h_H_out,p_C_out,h_C_out,Q_dot)
+ 
+"$ Evaporator1_gen"
+p_C_out		= p_C_in*(1-DPoverP_C)
+h_C_out		= propssi('H','P',p_C_out,'Q',1,F_C$)
+Q_dot			= m_dot_c*(h_C_out - h_C_in)
+ 
+p_H_out		= p_H_in*(1-DPoverP_H)
+h_H_out 		= h_H_in - Q_dot/m_dot_h
+ 
+End
+ 
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark Heat exchanger: Condenser sizing model
+Procedure condenser_sizing(V_tube,N_tp,N_sp,OD,ID,L_tube,epsilon_tube,pitch$,Pitch_r, X_B,b_cut,Tube_Mat$,R_ft,CF$,m_dot_c,T_c_in,T_c_out,P_c,HF$,T_sat,m_dot_h,T_w,x_e:N_t,D_shell,h_tube,h_shell,DELTAp_tube,DELTAp_shell,U_c,U_f,LMTD,Q_dot,A_hex,L_hex,over_design)
+ 
+"$Condenser1"
+ 
+Pitch			= Pitch_r*OD "pitch tube" 
+A_i_tube		= pi#*ID^2/4 "cross-sectional area of tube"
+ 
+Call tube_const(pitch$,N_tp:CL,CTP)
+rho_bar_c 		= propssi('D','T',(T_c_in+T_c_out)/2,'p',P_c,CF$) "average density of fluid flowing inside tube"
+N_t				= ceil(m_dot_c*N_tp/(rho_bar_c*V_tube*A_i_tube))+epsilon_tube "estimated tube number"
+G_c			= m_dot_c*N_tp/N_t/A_i_tube "mass flux of "
+ 
+D_shell 		= sqrt((N_t*CL*Pitch^2)/(0.785*CTP))
+N_row			= ceil((D_shell-2*D_shell*b_cut)/(pitch))
+ 
+T_wall_bar		= ((T_c_in+T_c_out)/2+T_sat)/2
+k_wall 			= k_(Tube_Mat$,T = T_wall_bar)	
+ 
+Call heattransfer_sp_circulartube(CF$,(T_c_in+T_c_out)/2,P_c,G_c,ID,L_tube,N_tp:h_tube,DELTAp_tube)
+ 
+cp_c 			= propssi('C','P',P_c,'T',(T_c_in+T_c_out)/2,CF$)
+Q_dot			= m_dot_c*cp_c*(T_c_out-T_c_in)
+ 
+Call heattransfer_shell_tp_kern(HF$,m_dot_h,T_sat,T_w,D_shell,Pitch$,Pitch,OD,x_B,L_tube,N_sp,N_row,x_e:h_shell,DELTAp_shell,f,Re)
+ 
+U_c 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall)^(-1)
+U_f 			= (OD/ID/h_tube+1/h_shell+OD*ln(OD/ID)/2/k_wall+R_ft)^(-1)
+over_design	= U_c/U_f
+ 
+Call rlmtd(T_sat,T_sat,T_c_in,T_c_out:LMTD)
+ 
+A_hex  		= Q_dot/U_c/LMTD
+L_hex			= A_hex/(pi#*OD*N_t)/N_tp 
+ 
+End
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark Cooling tower: Sizing model
+Procedure cooling_tower_design(M_dot_w_in,T_w_in,T_w_out,T_a_in,T_a_out,RH_a_in,RH_a_out,altitude,COC,fill$,L_cell,W_cell,blower_power_cell,Cost_cell,cfm_cell,DP_cond,eta_pp,CEPCI:T_wetbulb,T_dp,Capacity, Range, Approach,M_wm,L,G,KaV\L,Q_dot,A_floor,H_fill,H_rz,H_sp,H_tower,P_pp,P_fan_SI,Cost)
+ 
+"References: 
+[1] Kloppers JC, Kröger DG. The Lewis factor and its influence on the performance prediction of wet-cooling towers. International Journal of Thermal Sciences. 2005;44(9):879-84.
+[2] Pidaparti SR, Moisseytsev A, Sienicki JJ, Ranjan D. Counter flow induced draft cooling tower option for supercritical carbon dioxide Brayton cycle. Nuclear Engineering and Design. 2015;295:549-58."
+ 
+P 				= 101325*exp(-9.80665*0.0289644*altitude/(288.15*8.31447)) "ambient pressure at altitude in Pa"
+T_wetbulb		= wetbulb(AirH2O,T=T_a_in,R=rh_a_in,P=P) "design ambient wet bulb temperature in K"
+T_dp			= dewpoint(AirH2O,T=T_a_in,R=RH_a_in,P=P) "dew point temperature in K"
+cp_a_in		= specheat(AirH2O,T=T_a_in,P=P,R=RH_a_in)	"specific heat of entering air in J/kg-K"
+cp_w 			= cp('Water',T = (T_w_in+T_w_out)/2,P = P) "specific heat of water in J/kg-K"
+ 
+"Estimating outlet air temperature (t2) and L\G. The outlet air is usually saturated at the outlet air temperature"
+h_a_out 		= enthalpy(AirH2O,T=T_a_out,R=RH_a_out,P=P) "air outlet enthalpy in J/kg-K"
+h_a_in 			= enthalpy(AirH2O,T=T_a_in,B=T_wetbulb,P=P) "air inlet enthalpy in J/kg-K"
+omega_a_in 	= humrat(AirH2O,T=T_a_in, P=P,R=RH_a_in)"humidity ratio of entering air"
+omega_a_out	= humrat(AirH2O,T=T_a_out,P=P,R=RH_a_out) "air humidity ratio at outlet"
+ 
+{L\G 			= (h_a_out-h_a_in-cp_w*T_w_in*(omega_a_out-omega_a_in))/(cp_w*(T_w_in-T_w_out)) "water gas ratio kg of circulating water/kg air"}
+G 				= cp_w*M_dot_w_in*(T_w_in-T_w_out)/(h_a_out-h_a_in{-cp_w*T_w_out*(omega_a_out-omega_a_in)})
+h_w_in			= enthalpy('water',T = T_w_in,P=P) "water inlet enthalpy in J/kg-K"
+h_w_out		= enthalpy('water',T = T_w_out,P = P) "water outlet enthalpy in J/kg-K"
+ 
+"Tower Operating Parameters"
+Capacity		= m_dot_w_in*(h_w_in-h_w_out) "tower capacity in W"
+Range 			= T_w_in - T_w_out "tower range in K: difference between water inlet and oulet temperature"
+Approach 		= T_w_out - T_wetbulb "tower approach in K: difference between water outlet temperature and wetbulb temperature"
+ 
+"loading factor: the loading factor specific water flow rate or water flow rate density is the recommended water flow rate per unit tower cross sectional area (base are; B)"
+"! Water consumption" 
+"water consumption: wet cooling tower consume water in three major ways: evaporation, drift and blowdown. the evaporation is approximately 1.0 % of the water flow rate per each 10°F of cooling range. Drift refers to water which leaves the cooling tower entrained in the exiting air and is approximately 0.2% of water flow rate. as water evaporates, solids and chemicals concentrate in the cooling water. Blowdown is the water removed from the system, and replaced by fresh water, to prevent solids/chemicals buildup in the cooling water. blowndown is expressed as a percentage of the evaporation rate and depends upon the solids/chemicals concentration wich can be tolerated in the process in which the cooling makeup water. blowdown is usually about 20% of the evaporation rate M = E+D+Bd"
+ 
+M_we			= G*(omega_a_out-omega_a_in) "evaporation loss in kg/s"
+C_we			= M_we/(M_dot_w_in*(T_w_in-T_w_out)) 	 
+M_wd 			= 0.0002*M_dot_w_in "drift loss in kg/s"
+M_wbd			= (M_we-(COC-1)*M_wd)/(COC-1) "blowdown quantity in kg/s"
+M_wm			= M_we+M_wd+M_wbd "makeup water in kg/s"
+ 
+L				= M_dot_w_in-M_we "circualating water mass flow rate in kg/s"
+L\G 			= L/G "air mass flow rate in kg/s"
+ 
+Call merkelnumber(M_dot_w_in,T_w_in,T_w_out,P,h_a_in,h_a_out,L\G:KaV\L,h_a1,h_a2,h_a3,h_a4) "tower characteristic, merkel theory" 
+ 
+Q_dot			= G*(h_a_out-h_a_in) "heat load in W"
+Q_dot_eng		= Q_dot*convert(w,btu/hr) "heat load in btu/hr"
+ 
+"! Fan power estimation"
+rho_a_out_eng	= density(AirH2O,T=T_a_out,R=RH_a_out,P=P)*convert(kg/m^3,kg/ft^3) "outlet air density in lb_m/ft^3"
+ACFM_out		= G*convert(kg/s,kg/min)/rho_a_out_eng "air actual cubic feet per minute at outlet"
+N_cell			= ceil(ACFM_out/cfm_cell)
+P_fan_eng		= N_cell*blower_power_cell
+P_fan_SI		= P_fan_eng*convert(hp,W) "fan power input in W"
+ 
+"Tower dimensions"  
+Call cooling_tower_fill(fill$,L_cell,W_cell,N_cell,L,G,KaV\L:A_floor,H_fill,H_rz,H_sp,H_tower)
+ 
+"! Pump power estimation"
+H_pp			= H_tower + 10*convert(ft,m)
+P_pp			= H_pp*g#*M_dot_w_in/eta_pp +M_dot_w_in/density(Water,P = P,T = T_w_in)*DP_cond
+ 
+"! Construction cost estimation"
+C 				= 279/(1+0.0335*(85-converttemp(K,F,T_wetbulb))^(1.143))
+Approach_eng	= (converttemp(K,F,T_w_out)-converttemp(K,F,T_wetbulb)) "Approach in °F"
+Range_eng	= (converttemp(K,F,T_w_in)-converttemp(K,F,T_w_out))  "Range in °F"
+Cost_1967 	= Q_dot_eng/(C*Approach_eng+39.2*Range_eng-586) "Cost in $"
+ 
+L_gpm 			= L/density(Water,T = (T_w_out+T_w_in)/2,P = P)*convert(m^3/s,gpm) "outlet water flow rate in gpm"
+Cost_1978 	= 14.45*L_gpm*(0.9964*KaV\L-0.3843) "Cost (1978) in $"
+ 
+//Cost			= Cost_1978*CEPCI/218.8 "current cost in $"
+//Cost			= Cost_1967*CEPCI/109.7
+Cost			= N_cell*Cost_cell
+ 
+End
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark ORC: Generic model
+Procedure basicorc(ORCF$,Q_dot_total,T_ev_wf,T_cd,epsilon_s_tur,epsilon_s_pp,epsilon_rec,SH,SC:W_dot_net,eta_net_ORC,DT_min_rec,M_dot_r)
+ 
+Q_dot_ev		= Q_dot_total "heat transfer rate"
+P_ev			= propssi('P','T',T_ev_wf,'Q',0,ORCF$) "evaporating pressure"
+P_cd			= propssi('P','T',T_cd,'Q',0,ORCF$) "condensing pressure"
+ 
+"Turbine: which type of turbine? how to do the modeling?"
+If ((SH+0.1)>0)  Then
+	h_in_tur		= propssi('H','P',P_ev,'T',T_ev_wf+SH,ORCF$) "inlet turbine enthalpy"
+	s_in_tur		= propssi('S','P',P_ev,'T',T_ev_wf+SH,ORCF$) "inlet turbine entropy"
+	Call warning('ORC with superheating of XXXF1',SH)
+Else
+	h_in_tur		=propssi('H','P',P_ev,'Q',1,ORCF$) "inlet turbine enthalpy"
+	s_in_tur		=propssi('S','P',P_ev,'Q',1,ORCF$) "inlet turbine entropy"
+	Call warning('ORC without superheating')
+Endif
+h_out_s_tur	=propssi('H','P',P_cd,'S',S_in_tur,ORCF$) "outlet isentropic turbine enthalpy"
+ 
+w_s_tur		=h_in_tur-h_out_s_tur
+w_tur			=w_s_tur*epsilon_s_tur
+h_out_tur		=h_in_tur-w_tur
+T_out_tur		=propssi('T','P',P_cd,'H',h_out_tur,ORCF$) "outlet turbine temperature"
+ 
+"Condenser: wet or dry cooling? ask to CMI"
+If ((SC+0.1)>0) Then
+	h_out_cd		=propssi('H','P',P_cd,'T',T_cd-SC,ORCF$)
+	s_out_cd		=propssi('S','P',P_cd,'T',T_cd-SC,ORCF$)
+	Call warning('ORC with sub-cooling of XXXF1',SC)
+Else
+	h_out_cd		=propssi('H','P',P_cd,'Q',0,ORCF$)
+	s_out_cd		=propssi('S','P',P_cd,'Q',0,ORCF$)
+	Call warning('ORC without sub-cooling')
+Endif
+ 
+"Pumping"
+h_out_s_pp	=propssi('H','P',P_ev,'S',s_out_cd,ORCF$)
+w_s_pp		=h_out_s_pp-h_out_cd
+w_pp			=w_s_pp/epsilon_s_pp
+h_out_pp		=h_out_cd+w_pp
+T_out_pp		=propssi('T','P',P_ev,'H',h_out_pp,ORCF$)
+ 
+DT_max_rec 	= T_out_tur-T_out_pp "difference temperature between outlet turbine stream and outlet pump stream"
+ 
+If (DT_max_rec < 5) Then Call warning('Temperature difference of working fluid at turbine oulet and pump outlet is small, the value is of XXXF1',DT_max_rec)
+ 
+"Recuperator"
+cp_out_tur		=propssi('C','P',P_cd,'H',h_out_tur,ORCF$)
+cp_out_pp		=propssi('C','P',P_ev,'H',h_out_pp,ORCF$)
+cp_min_rec	=min(cp_out_tur,cp_out_pp) "minimum specific heat in recuperator"
+ 
+M_dot_r		=Q_dot_total/(h_in_tur-h_out_pp-cp_min_rec*epsilon_rec*(T_out_tur-T_out_pp))
+ 
+C_dot_min		=min(M_dot_r*cp_out_tur, M_dot_r*cp_out_pp)
+Q_dot_rec		=C_dot_min*epsilon_rec*(T_out_tur-T_out_pp)
+T_out_rec_fr	=T_out_pp+Q_dot_rec/(M_dot_r*cp_out_pp)
+T_out_rec_ch	=T_out_tur-Q_dot_rec/(M_dot_r*cp_out_tur)
+If (T_out_rec_ch<T_cd) or (T_out_rec_ch = T_cd) Then Call warning('outlet hot side recuperator temperature is smaller or equal to condensing temperature')
+ 
+DT_min_rec	= min(T_out_tur-T_out_rec_fr,T_out_rec_ch-T_out_pp)
+ 
+"Overall system"
+W_dot_pp			=M_dot_r*(h_out_pp-h_out_cd)
+W_dot_tur			=M_dot_r*(h_in_tur-h_out_tur)
+W_dot_net			=W_dot_tur-W_dot_pp
+eta_gross_ORC	=W_dot_tur/Q_dot_total
+eta_net_ORC		=W_dot_net/Q_dot_total 
+ 
+End
+"<><><><><><><><><><><><><><><><><><><><>"
+$bookmark 2. Example
+ 
+{"! Pump1"
+F$			='Pentane'
+T_in		=30+273.15 [K]
+p_in		= PropsSI('P','T',T_in,'Q',0,F$)
+p_out 		= PropsSI('P','T',165+273.15,'Q',1,F$)
+m_dot	= 15.04 [kg/s] 
+eta 		= 0.8
+h_in 		= PropsSI('H','T',T_in-5,'P',p_in,F$)
+Call Pump1(F$,p_in,p_out,h_in,m_dot,eta: h_out, W_dot)}
+ 
+{"! Turbine1"
+F$='carbondioxide'
+P_in=1e6 [Pa]
+h_in=PropsSI('H','P',P_in,'T',800,F$)
+P_out=7e5 [Pa]
+m_dot=0.08 [kg/s]
+eta= -0.9 [-]
+Call Turbine1(F$, p_in, p_out, h_in, m_dot, eta: h_out, W_dot, eta_s)}
+ 
+{"! HEX procedure"
+F_H$='CarbonDioxide'
+m_dot_H=0.1 [kg/s]
+T_H_in=380 [K]  
+P_H_in=4e6 [Pa]
+h_H_in=propssi('H','T',T_H_in,'P',P_H_in,F_H$)
+m_dot_C=0.03 [kg/s]
+T_C_in=300 [K]
+P_C_in=6e6 [Pa]
+C_C=0 [%]
+h_C_in=propssi('H','T',T_C_in,'P',P_C_in,F_C$)
+F_C$='water'
+DT=5 [K]
+DPoverP_H=0.01
+DPoverP_C=0.01
+Call hex(F_H$, 0, m_dot_H, h_H_in, P_H_in, F_C$, C_C, m_dot_C, h_C_in, P_C_in, DT, DPoverP_H, DPoverP_C: h_H_out, P_H_out, h_C_out, P_C_out, Q_dot, eff)
+T_H_out 		= propssi('T','P',p_H_out,'H',h_H_out,F_H$)
+T_C_out 		= propssi('T','P',P_C_out,'H',h_C_out,F_C$)}
+ 
+{Call hex_1(V_tube,N_tp,N_sp,OD,ID,L_tube,epsilon_tube,Pitch_r, X_B,Tube_Mat$,R_ft,CF$,m_dot_c,P_c, T_c_in,T_c_out,HF$,m_dot_h,P_h,T_h_in,T_h_out:N_t,D_shell,h_tube,h_shell,DELTAp_tube,DELTAp_shell,U_c,LMTD,Q_dot_h,A_hex,L_hex,over_design)
+ 
+V_tube = 2
+N_tp = 1
+N_sp = 1
+X_B = 0.5/D_shell
+epsilon_tube = 0 
+OD = 19/1000
+ID = 16/1000
+L_tube = L_hex
+Pitch_r = 0.0254/OD
+Tube_Mat$ = 'Carbon_steel'
+R_ft = 0.000176 
+CF$ = 'Water'
+m_dot_c = 150 [kg/s]
+T_c_in = 20+273.15 
+P_c = 1e5
+HF$ = 'Water'
+m_dot_h = 50 
+P_h = 1e5
+T_h_in = 32+273.15
+T_h_out = 25+273.15 
+cp_h = propssi('c','p',p_h,'t',T_h_in,HF$)
+cp_c = propssi('c','p',p_c,'t',T_c_in,CF$)
+(T_c_out-T_c_in)*m_dot_c = m_dot_h*(t_h_in-t_h_out)}
+ 
+{ORCF$ = 'r245FA'
+Q_dot_total = 7e6
+T_ev_wf = 140+273.15;T_cd = 50+273.15;epsilon_s_tur =0.8;epsilon_s_pp = 0.7;epsilon_rec = 0.8;SH$='true';SH=5;
+SC$='true'
+SC=10
+ 
+Call basicorc(ORCF$,Q_dot_total,T_ev_wf,T_cd,epsilon_s_tur,epsilon_s_pp,epsilon_rec,SH,SC:W_dot_net,eta_net_ORC,DT_min_rec,M_dot_r)}
