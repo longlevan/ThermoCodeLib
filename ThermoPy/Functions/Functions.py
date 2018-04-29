@@ -190,8 +190,31 @@ def thermosyphon_operatinglimits(fluid,D,L,T_sat,Qdot):
     sigma = PropsSI('I','T',T_sat,'Q',0,fluid)
     A_v = (pi*D**2)/4
     Qdot_ent = 3.2*h_lv*A_v*(rho_v**(-0.25)+rho_l**(-0.25))**(-2)*(sigma*9.8065*(rho_l-rho_v))**(0.25)
-    Qdot_boil= (pi*D*L)*0.149*rho_v*h_lv*((sigma*(rho_l-rho_v)*9.8065)/rho_v**2)**(0.25)
+    Qdot_boil= (pi*D*L)*0.12*rho_v*h_lv*((sigma*(rho_l-rho_v)*9.8065)/rho_v**2)**(0.25)
+    Q_boil = rho_v*h_lv*((sigma*(rho_l-rho_v)*9.8065)/rho_v**2)**(0.25)
     Qdot_son =  0.474*A_v*h_lv*(rho_v*P_sat)**(0.5)
     return Qdot_ent,Qdot_boil,Qdot_son
+
+def FinsInputs(h_fins,t_fins,N_fpi,D_o,L):
+    """
+    Return the number of fins per meter and the total surface area of finned tube
+    :param h_fins: fins height [m]
+    :param t_fins: fins thickness [m]
+    :param N_fpi: fins per inch [-]
+    :param D_o: root outer diameter of tube [m]
+    :param L: tube length [m]
+    :return: N_fpm, A_tot
+    """
+    D_fins = D_o+2*h_fins # fins diameter
+    fins_pitch = (1/N_fpi)*0.0254 # fin pitch in meter
+    fins_free_spacing = fins_pitch-t_fins # fins free spacing in meter
+    A_fins_single = pi*(D_fins**2-D_o**2)/4.0 # single fins surface area (for circular fins)
+    N_fpm = N_fpi/0.0254 # Number of fins per meter
+    N_fins = L*N_fpm # Number of fins
+    A_fins = N_fins*A_fins_single # total fins surface area for the length L
+    A_root = (N_fins+1)*pi*D_o*fins_free_spacing
+    A_tot = A_fins+A_root
+    return N_fpm, A_tot
+
 
 
