@@ -10,7 +10,7 @@ model System1
     energyDynamics=Modelica.Fluid.Types.Dynamics.FixedInitial,
     m_flow_nominal=mA_flow_nominal,
     V=V)
-    annotation (Placement(transformation(extent={{60,20},{80,40}})));
+    annotation (Placement(transformation(extent={{72,22},{92,42}})));
   Modelica.Thermal.HeatTransfer.Components.ThermalConductor theCon(G=20000/30)
     "Thermal conductance with the ambient"
     annotation (Placement(transformation(extent={{20,40},{40,60}})));
@@ -27,7 +27,7 @@ model System1
     annotation (Placement(transformation(extent={{20,70},{40,90}})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor heaCap(C=2*V*1.2*1006)
     "Heat capacity for furniture and walls"
-    annotation (Placement(transformation(extent={{60,50},{80,70}})));
+    annotation (Placement(transformation(extent={{-6,-4},{14,16}})));
   Modelica.Blocks.Sources.CombiTimeTable timTab(
       extrapolation=Modelica.Blocks.Types.Extrapolation.Periodic,
       smoothness=Modelica.Blocks.Types.Smoothness.ConstantSegments,
@@ -42,15 +42,15 @@ equation
       color={191,0,0},
       smooth=Smooth.None));
   connect(theCon.port_b, vol.heatPort) annotation (Line(
-      points={{40,50},{50,50},{50,30},{60,30}},
+      points={{40,50},{50,50},{50,32},{72,32}},
       color={191,0,0},
       smooth=Smooth.None));
   connect(preHea.port, vol.heatPort) annotation (Line(
-      points={{40,80},{50,80},{50,30},{60,30}},
+      points={{40,80},{50,80},{50,32},{72,32}},
       color={191,0,0},
       smooth=Smooth.None));
   connect(heaCap.port, vol.heatPort) annotation (Line(
-      points={{70,50},{50,50},{50,30},{60,30}},
+      points={{4,-4},{48,-4},{48,32},{72,32}},
       color={191,0,0},
       smooth=Smooth.None));
   connect(timTab.y[1], preHea.Q_flow) annotation (Line(

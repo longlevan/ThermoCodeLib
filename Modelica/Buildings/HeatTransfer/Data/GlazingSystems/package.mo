@@ -6,6 +6,7 @@ package GlazingSystems "Package with thermophysical properties for glazing syste
 
 
 
+
 annotation (preferredView="info",
 Documentation(info="<html>
 Package with generic records that implement thermophysical properties for glazing systems.
@@ -25,5 +26,4 @@ First implementation.
 </li>
 </ul>
 </html>"));
-
 end GlazingSystems;

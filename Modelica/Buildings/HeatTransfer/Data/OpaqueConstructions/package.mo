@@ -5,6 +5,7 @@ package OpaqueConstructions "Package with opaque constructions for floors, walls
 
 
 
+
   annotation (preferredView="info",
 Documentation(info="<html>
 <p>
@@ -29,5 +30,4 @@ First implementation.
 </li>
 </ul>
 </html>"));
-
 end OpaqueConstructions;
